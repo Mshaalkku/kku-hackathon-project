@@ -70,7 +70,8 @@ window.IQ = window.IQ || {};
     { key: "doubleXP", label: "2x XP", iconName: "bolt", id: "pu-doublexp" },
   ];
 
-  function renderPowerUps(state, onUse) {
+  function renderPowerUps(state, onUse, options) {
+    const opts = options || {};
     const bar = document.getElementById("powerup-bar");
     if (!bar) return;
     bar.innerHTML = "";
@@ -81,13 +82,13 @@ window.IQ = window.IQ || {};
       btn.type = "button";
       btn.className = "powerup-btn";
       btn.id = def.id;
-      const disabled = count <= 0;
-      if (disabled) btn.setAttribute("aria-disabled", "true");
-      btn.title = disabled ? "Earn more by completing interviews" : def.label;
+      const disabled = count <= 0 || Boolean(opts.disabled);
+      btn.disabled = disabled;
+      btn.title = count <= 0 ? "Earn more by completing interviews" : def.label;
       btn.innerHTML = icon(def.iconName) + "<span>" + def.label + "</span><span class=\"powerup-count\">" + count + "</span>";
       btn.addEventListener("click", () => {
         if (disabled) {
-          toast("Earn more " + def.label + " by completing interviews.");
+          if (count <= 0) toast("Earn more " + def.label + " by completing interviews.");
           return;
         }
         onUse(def.key);
@@ -99,9 +100,10 @@ window.IQ = window.IQ || {};
     replayBtn.type = "button";
     replayBtn.className = "powerup-btn";
     replayBtn.id = "pu-replay";
+    replayBtn.disabled = Boolean(opts.disabled);
     replayBtn.title = "Replay question";
     replayBtn.innerHTML = icon("replay") + "<span>Replay question</span>";
-    replayBtn.addEventListener("click", () => onUse("replay"));
+    replayBtn.addEventListener("click", () => { if (!replayBtn.disabled) onUse("replay"); });
     bar.appendChild(replayBtn);
   }
 

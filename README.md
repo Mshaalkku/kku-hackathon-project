@@ -1,89 +1,101 @@
 # Interview Quest
 
-A game-like English job-interview practice tool. Speak to an interviewer, hear their questions out loud, earn XP and power-ups, and get feedback on your English and answer structure.
+A voice-first English job-interview practice simulator. Meet Sarah or David in a professional virtual interview room, answer by microphone or typing, earn career-training XP, and receive a practical training report.
 
-> **Learning tool only:** Interview Quest is for practice. Its scores and feedback are not real hiring assessments.
+> **Learning tool only:** Scores and coaching are for practice, not a real hiring assessment.
 
-## What it does
+## What works
 
-- Real voice interview flow: browser speech-to-text for your answers and text-to-speech for the interviewer
-- Choose job field, difficulty, male/female interviewer voice, interviewer personality, and practice vs real-interview mode
-- **Live AI interviewer (optional):** responds to what you actually say with relevant, adaptive follow-up questions
-- Secure local proxy keeps the AI key server-side — it is never included in browser code
-- Automatic rule-based question-bank fallback when AI is unavailable
-- Text input always works as a fallback for microphone/speech-recognition issues
-- XP, levels, daily streaks, achievements, and power-ups
-- End-of-interview coaching report with English/communication tips, structure feedback, strengths, growth areas, and stronger-answer examples
-- A **Demo speed** setting for a short three-question session and short timers
+- **Reliable English interview practice:** a staged interview moves through introduction, background, role skills, collaboration, problem solving, impact, growth, and candidate questions/closing.
+- **13 career paths:** General / Any Job, Software Engineering, Information Systems, Cybersecurity, AI / Machine Learning, Data Analysis / Data Science, IT Support, Product Management, Project Management, Marketing, Finance / Accounting, Human Resources, and Sales.
+- **Sarah or David:** lightweight illustrated interviewer characters, professional office setting, personality choices, and browser voice when available.
+- **Explicit voice controls:** Start Answer, Stop Answer, Finish Answer, Skip Question, Repeat Question, and End Interview. Typing is always available when microphone or speech recognition is unavailable.
+- **Practice / Real Interview modes:** Practice shows immediate coaching; Real mode saves feedback for the report.
+- **Career game layer:** XP, levels, streaks, achievements, Think Time, Hint, Second Chance, 2× XP, and question replay stay in browser `localStorage`.
+- **Demo speed:** a three-question path and short preparation timers let a reviewer see the full flow in about a minute.
+- **Partial reports:** End Interview safely creates a report from completed answers instead of losing progress.
 
-## Requirements
+## Languages and translations
 
-- **Recommended browser:** Microsoft Edge or Google Chrome
-  - Both support interviewer text-to-speech and microphone speech recognition well on Windows.
-  - If microphone recognition is unavailable, type directly into the answer box.
-- Python 3 only if you want to run the optional live AI interviewer. No Python packages are needed.
+The reliable spoken and locally scored interview language is **English** in this iteration.
 
-## Run without AI (built-in fallback)
+The interface and supplemental translation system supports:
 
-Double-click `index.html` and open it in Edge or Chrome.
+- English
+- Arabic (with RTL interface layout)
+- Spanish
+- French
+- German
+- Hindi
 
-The whole game works: interviewer voice, microphone or text answers, question progression, XP, power-ups, and a learning report. Since `index.html` was opened directly from your computer, the browser cannot reach the secure local AI proxy, so Interview Quest automatically uses its built-in practice question bank.
+Choose an interface language and translation language on the setup screen. During an interview, change the translation language or toggle subtitles without restarting. English source questions remain visible; the selected translation appears beneath them. Report translations work the same way globally and on each feedback card.
 
-Use **Preview an example report** on the setup screen to see a made-up sample run.
+The candidate's original spoken/transcribed or typed answer is always preserved exactly as submitted. The app never replaces it with a translation.
 
-## Run with the live AI interviewer
+## Run without AI — complete fallback
 
-The AI key stays server-side. Never put it in `js/`, `index.html`, or any file committed to GitHub.
+1. Double-click `index.html` and open it in Microsoft Edge or Google Chrome.
+2. Choose a career, language preferences, interviewer, and **Demo speed** if you want a short run.
+3. Start the interview. Type answers or use browser microphone recognition when it is available.
 
-1. Create a file named `.env` in this project folder.
-2. Copy the name from `.env.example` and add your own Anthropic key:
+The fallback is complete: deterministic interview stages, office UI, scoring, local feedback, multilingual subtitles/translations, XP, power-ups, and a final report all work with no key, no server, and no network.
+
+Use **Preview an example report** to see invented demo content immediately.
+
+## Optional live AI follow-ups and report coaching
+
+The AI path is optional. It only adds a bounded, answer-specific follow-up and optional coaching; it never controls or can break the core interview sequence.
+
+1. Create `.env` in this project folder from `.env.example`.
+2. Add your own key locally:
 
    ```env
    ANTHROPIC_API_KEY=your-real-key-goes-here
    ```
 
-3. Start the local server from this project folder:
+3. Start the local-only server:
 
    ```bash
    python server/server.py
    ```
 
-   It listens only at `127.0.0.1` (your own computer), not on your local network.
+   On some Mac/Linux systems use `python3 server/server.py`.
 
-   On some Mac/Linux setups, use `python3 server/server.py`.
+4. Open [http://localhost:5000](http://localhost:5000).
 
-4. Open **http://localhost:5000** in Edge or Chrome.
+The server binds only to `127.0.0.1`, so it is not exposed to the local network.
 
-The setup page will say **“Live AI interviewer is ready.”** The interviewer now gets the running interview transcript, responds conversationally to the candidate's actual answers, and can ask specific follow-up questions. The final report is also generated by the AI.
+### Privacy and key safety
 
-### Why the key is safe locally
-
-- `.env` is listed in `.gitignore` and never committed.
-- Only `server/server.py` reads the key.
-- The browser talks to `/api/chat` on your local server; it never sees the API key.
-- The key is not logged or returned by `/api/status`.
+- `.env` is ignored by Git and must never be committed.
+- Only `server/server.py` reads the API key.
+- The browser calls only narrow local routes: `/api/status`, `/api/follow-up`, and `/api/report`.
+- The browser never receives the API key, server prompts, provider diagnostics, or raw provider response.
+- The fallback path keeps all practice text in the browser. In optional AI mode, the answer/question data needed for the follow-up or report is sent through the local proxy to Anthropic; the app itself does not save interview text to GitHub or a database.
+- If the key, AI service, microphone, speech recognition, or text-to-speech fails, the visible English question and typed-answer path still work.
 
 ## GitHub Pages note
 
-GitHub Pages can host the static version, including the full fallback game, but **cannot safely run live AI** because it cannot store server secrets. To make the public site use live AI later, deploy a small serverless proxy (for example, a Cloudflare Worker) that holds the key as a secret. Keep the browser frontend exactly as it is and point its `/api/*` requests to that backend.
+GitHub Pages can host the complete static fallback app, but it cannot safely store a secret key or run the local Python proxy. For an AI-enabled public deployment, use a secure server-side or serverless proxy that keeps the same narrow request validation and holds the key as a secret.
 
 ## Project structure
 
 ```text
-index.html              One-screen app: setup → interview → report
-css/style.css           Responsive, self-contained visual design
-js/questions.js         Rule-based fallback question bank
-js/speech.js            Browser voice input/output wrapper
-js/ai.js                Client for the secure local AI proxy
-js/feedback.js          Fast local feedback and full fallback report
-js/game.js              Local XP, levels, streaks, achievements, power-ups
-js/ui.js                Icons and UI helpers
-js/app.js               Main interview flow/controller
-server/server.py        Python-standard-library secure AI proxy
-sample-data/data.js     Made-up example interview/report
-.env.example            Key variable name only (no key)
+index.html              Single-screen setup → interview → report experience
+css/style.css           Responsive office scene, RTL, accessibility styles
+js/i18n.js              Six-language registry, UI strings, browser preferences
+js/interview-state.js   Explicit lifecycle transitions and control rules
+js/questions.js         Career catalog and deterministic staged question plans
+js/speech.js            Cancellation-safe browser TTS/STT wrapper
+js/ai.js                Narrow client for the local secure proxy
+js/feedback.js          Offline English scoring and multilingual report fallback
+js/game.js              Browser-only XP, streaks, achievements, and power-ups
+js/ui.js                Icons, HUD, toasts, and compact power-up rendering
+js/app.js               Interview flow, recovery controls, translation rendering
+server/server.py        Local-only standard-library AI proxy
+sample-data/data.js     Completely invented example interview
+.env.example            Key variable name only
 ```
 
-Built with Claude Code during the KKU Claude Code hackathon
-
-Started on 2026-10-01
+Built with Claude Code during the KKU Claude Code hackathon.
+Started on 2026-10-01.

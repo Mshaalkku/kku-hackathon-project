@@ -1,19 +1,22 @@
 /* ===========================================================
-   Interview Quest — speech layer
-   Wraps the browser's Web Speech API:
-     - speechSynthesis for the interviewer's voice (TTS)
-     - SpeechRecognition for the candidate's microphone (STT)
-   Both are optional: if unsupported, app.js falls back to the
-   text-only input, which always works.
+   Interview Quest — resilient browser speech layer
+   Browser speech remains optional: typed answers always work.
    =========================================================== */
 window.IQ = window.IQ || {};
 
 (function () {
   const hasTTS = "speechSynthesis" in window;
   const SpeechRecognitionImpl = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const hasSTT = !!SpeechRecognitionImpl;
+  const hasSTT = Boolean(SpeechRecognitionImpl);
+  const FEMALE_HINTS = ["female", "zira", "aria", "jenny", "samantha", "victoria", "susan", "karen", "moira", "tessa", "joanna", "salli", "kimberly", "ivy", "hazel"];
+  const MALE_HINTS = ["male", "david", "guy", "mark", "alex", "daniel", "fred", "tom", "matthew", "justin", "ryan", "eric", "james"];
+  const PERSONALITY_TONE = { friendly: { rate: 1, pitch: 1.08 }, professional: { rate: 1, pitch: 1 }, strict: { rate: 1.05, pitch: 0.92 } };
 
   let voicesCache = [];
+  let speakOperation = 0;
+  let activeRecognition = null;
+  let recognitionOperation = 0;
+
   function loadVoices() {
     voicesCache = hasTTS ? window.speechSynthesis.getVoices() : [];
     return voicesCache;
@@ -23,127 +26,155 @@ window.IQ = window.IQ || {};
     window.speechSynthesis.onvoiceschanged = loadVoices;
   }
 
-  const FEMALE_HINTS = ["female", "zira", "aria", "jenny", "samantha", "victoria", "susan", "karen", "moira", "tessa", "joanna", "salli", "kimberly", "ivy", "hazel"];
-  const MALE_HINTS = ["male", "david", "guy", "mark", "alex", "daniel", "fred", "tom", "matthew", "justin", "ryan", "eric", "james"];
-
   function pickVoice(genderPref) {
     const voices = voicesCache.length ? voicesCache : loadVoices();
-    const englishVoices = voices.filter((v) => /^en/i.test(v.lang));
-    const pool = englishVoices.length ? englishVoices : voices;
+    const english = voices.filter((voice) => /^en/i.test(voice.lang));
+    const pool = english.length ? english : voices;
     if (!pool.length) return null;
-
     const hints = genderPref === "female" ? FEMALE_HINTS : MALE_HINTS;
-    const match = pool.find((v) => hints.some((h) => v.name.toLowerCase().includes(h)));
-    return match || pool[0] || null;
+    return pool.find((voice) => hints.some((hint) => voice.name.toLowerCase().includes(hint))) || pool[0];
   }
 
-  const PERSONALITY_TONE = {
-    friendly: { rate: 1.0, pitch: 1.08 },
-    professional: { rate: 1.0, pitch: 1.0 },
-    strict: { rate: 1.05, pitch: 0.92 },
-  };
-
-  let currentUtterance = null;
-
-  /**
-   * Speak text aloud. Resolves when speech finishes (or immediately if TTS
-   * is unsupported, so callers never hang).
-   */
-  function speak(text, opts) {
-    opts = opts || {};
+  function speak(text, options) {
+    const opts = options || {};
+    const operation = ++speakOperation;
     return new Promise((resolve) => {
-      if (!hasTTS || !text) {
-        resolve(false);
+      if (!hasTTS || !String(text || "").trim()) {
+        resolve({ ok: false, reason: "unsupported" });
         return;
       }
       window.speechSynthesis.cancel();
-      const utt = new SpeechSynthesisUtterance(text);
+      const utterance = new SpeechSynthesisUtterance(text);
       const tone = PERSONALITY_TONE[opts.personality] || PERSONALITY_TONE.professional;
-      utt.rate = tone.rate;
-      utt.pitch = tone.pitch;
+      utterance.rate = tone.rate;
+      utterance.pitch = tone.pitch;
       const voice = pickVoice(opts.gender);
-      if (voice) utt.voice = voice;
-
-      utt.onstart = () => opts.onStart && opts.onStart();
-      utt.onend = () => {
-        opts.onEnd && opts.onEnd();
-        resolve(true);
+      if (voice) utterance.voice = voice;
+      let settled = false;
+      const watchdogMs = Math.max(9000, Math.min(45000, String(text).split(/\s+/).length * 600 + 4500));
+      const settle = (result) => {
+        if (settled || operation !== speakOperation) return;
+        settled = true;
+        clearTimeout(watchdog);
+        if (opts.onEnd) opts.onEnd(result);
+        resolve(result);
       };
-      utt.onerror = () => {
-        opts.onEnd && opts.onEnd();
-        resolve(false);
-      };
-      currentUtterance = utt;
-      window.speechSynthesis.speak(utt);
+      const watchdog = setTimeout(() => {
+        if (operation === speakOperation) {
+          try { window.speechSynthesis.cancel(); } catch (error) { /* no-op */ }
+          settle({ ok: false, reason: "timeout" });
+        }
+      }, watchdogMs);
+      utterance.onstart = () => { if (operation === speakOperation && opts.onStart) opts.onStart(); };
+      utterance.onend = () => settle({ ok: true, reason: "end" });
+      utterance.onerror = (event) => settle({ ok: false, reason: event.error || "speech_error" });
+      window.speechSynthesis.speak(utterance);
     });
   }
 
   function stopSpeaking() {
-    if (hasTTS) window.speechSynthesis.cancel();
+    speakOperation += 1;
+    if (hasTTS) {
+      try { window.speechSynthesis.cancel(); } catch (error) { /* no-op */ }
+    }
   }
 
-  // ---------------- Speech-to-text ----------------
-  let recognition = null;
-  let finalBuffer = "";
+  function normalizeRecognitionError(error) {
+    const codes = {
+      "not-allowed": "not_allowed",
+      "service-not-allowed": "not_allowed",
+      "no-speech": "no_speech",
+      "audio-capture": "audio_capture",
+      network: "network",
+      aborted: "aborted",
+      "language-not-supported": "unsupported",
+    };
+    return codes[error] || error || "speech_error";
+  }
 
-  function startListening(handlers) {
-    handlers = handlers || {};
+  function startListening(handlers, options) {
+    const callbacks = handlers || {};
+    const opts = options || {};
     if (!hasSTT) {
-      handlers.onError && handlers.onError("unsupported");
-      return false;
+      callbacks.onError && callbacks.onError("unsupported");
+      return { started: false, operation: null };
     }
-    finalBuffer = "";
-    recognition = new SpeechRecognitionImpl();
-    recognition.lang = "en-US";
+    abortListening();
+    const operation = ++recognitionOperation;
+    const baseText = String(opts.initialText || "").trim();
+    let finalBuffer = "";
+    let started = false;
+    let ended = false;
+    const recognition = new SpeechRecognitionImpl();
+    activeRecognition = recognition;
+    recognition.lang = opts.language || "en-US";
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
+    const current = () => operation === recognitionOperation && activeRecognition === recognition;
+    const combinedFinal = () => [baseText, finalBuffer].filter(Boolean).join(baseText && finalBuffer ? " " : "").trim();
+    const finish = (reason) => {
+      if (ended || !current()) return;
+      ended = true;
+      if (activeRecognition === recognition) activeRecognition = null;
+      callbacks.onEnd && callbacks.onEnd({ operation, text: combinedFinal(), reason });
+    };
+
+    recognition.onstart = () => {
+      if (!current()) return;
+      started = true;
+      callbacks.onStart && callbacks.onStart({ operation });
+    };
     recognition.onresult = (event) => {
+      if (!current()) return;
       let interim = "";
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const chunk = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          finalBuffer = (finalBuffer + " " + chunk).trim();
-        } else {
-          interim += chunk;
-        }
+      for (let index = event.resultIndex; index < event.results.length; index += 1) {
+        const transcript = event.results[index][0].transcript.trim();
+        if (event.results[index].isFinal) finalBuffer = [finalBuffer, transcript].filter(Boolean).join(" ").trim();
+        else interim += transcript + " ";
       }
-      handlers.onFinal && handlers.onFinal(finalBuffer);
-      handlers.onInterim && handlers.onInterim(interim);
+      callbacks.onFinal && callbacks.onFinal({ operation, text: combinedFinal() });
+      callbacks.onInterim && callbacks.onInterim({ operation, text: interim.trim(), combined: [combinedFinal(), interim.trim()].filter(Boolean).join(" ") });
     };
     recognition.onerror = (event) => {
-      handlers.onError && handlers.onError(event.error);
+      if (!current()) return;
+      const reason = normalizeRecognitionError(event.error);
+      if (reason !== "aborted") callbacks.onError && callbacks.onError(reason);
     };
-    recognition.onend = () => {
-      handlers.onEnd && handlers.onEnd(finalBuffer);
-    };
+    recognition.onend = () => finish(started ? "end" : "failed_to_start");
 
     try {
       recognition.start();
-      return true;
-    } catch (e) {
-      handlers.onError && handlers.onError(String(e));
-      return false;
+      return { started: true, operation };
+    } catch (error) {
+      if (current()) {
+        activeRecognition = null;
+        callbacks.onError && callbacks.onError("start_failed");
+      }
+      return { started: false, operation: null };
     }
   }
 
   function stopListening() {
-    if (recognition) {
-      try {
-        recognition.stop();
-      } catch (e) {
-        /* ignore */
-      }
+    const recognition = activeRecognition;
+    if (!recognition) return false;
+    try {
+      recognition.stop();
+      return true;
+    } catch (error) {
+      return false;
     }
   }
 
-  IQ.speech = {
-    hasTTS,
-    hasSTT,
-    speak,
-    stopSpeaking,
-    startListening,
-    stopListening,
-  };
+  function abortListening() {
+    recognitionOperation += 1;
+    const recognition = activeRecognition;
+    activeRecognition = null;
+    if (!recognition) return false;
+    try { recognition.abort(); } catch (error) { /* no-op */ }
+    return true;
+  }
+
+  IQ.speech = { hasTTS, hasSTT, speak, stopSpeaking, startListening, stopListening, abortListening, normalizeRecognitionError };
 })();
