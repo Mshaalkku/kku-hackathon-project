@@ -17,8 +17,8 @@
   let el = {};
 
   const INTERVIEWERS = {
-    sarah: { id: "sarah", name: "Sarah", visualId: "sarah", voicePreference: "female", title: "Career Interviewer" },
-    david: { id: "david", name: "David", visualId: "david", voicePreference: "male", title: "Career Interviewer" },
+    sarah: { id: "sarah", labelKey: "interviewerSarah", visualId: "sarah", voicePreference: "female" },
+    david: { id: "david", labelKey: "interviewerDavid", visualId: "david", voicePreference: "male" },
   };
   const choices = {
     role: "general", difficulty: "medium", interviewer: "sarah", personality: "friendly", mode: "practice", demoSpeed: false,
@@ -45,7 +45,7 @@
       "btn-start-interview", "btn-load-example", "demo-speed-toggle", "interview-translation-language-select", "subtitle-toggle", "btn-end-interview",
       "interviewer-character", "character-sarah", "character-david", "interviewer-name", "interviewer-role-label", "interviewer-status", "stage-label", "question-progress", "progress-dots",
       "question-text", "question-translation", "question-translation-text", "prep-timer", "hint-panel", "hint-text", "hint-translation", "quick-tip-panel", "quick-tip-text",
-      "practice-feedback-panel", "feedback-score", "feedback-strength", "feedback-improvement", "feedback-indicators", "feedback-tip-text", "feedback-tip-translation", "btn-continue-interview", "btn-retry-answer", "btn-hear-feedback",
+      "practice-feedback-panel", "feedback-score", "feedback-strength", "feedback-strength-translation", "feedback-improvement", "feedback-improvement-translation", "feedback-indicators", "feedback-tip-text", "feedback-tip-translation", "btn-continue-interview", "btn-retry-answer", "btn-hear-feedback",
       "live-transcript", "answer-input", "mic-status-label", "btn-start-answer", "btn-stop-answer", "btn-finish-answer", "btn-skip-question", "btn-repeat-question", "powerup-bar",
       "end-interview-dialog", "btn-cancel-end", "btn-confirm-end", "btn-play-again", "btn-back-setup", "report-global-translation-toggle",
       "report-mode-note", "report-example-banner", "report-score-ring", "report-score-value", "report-xp-gained", "report-level-banner", "report-achievements",
@@ -95,8 +95,13 @@
     updateAIStatusNote();
     IQ.ui.renderHUD(gameState);
     if (session && !session.complete) {
+      session.interviewerName = interviewerDisplayName(session.interviewer);
+      el.interviewerName.textContent = session.interviewerName;
       el.interviewerRoleLabel.textContent = interviewerRoleLabel();
       renderCurrentTurn();
+      if (state.phase === IQ.interviewState.PHASES.REVIEWING && session.pendingPracticeEntry) {
+        renderPracticeFeedback(session.pendingPracticeEntry);
+      }
       updateControls();
     }
     if (reportModel) renderReport(reportModel.report, reportModel.meta);
@@ -143,7 +148,7 @@
   function buildSetupOptionGrids() {
     renderGrid("role-grid", IQ.questions.ROLES.map((role) => ({ value: role.id, label: IQ.i18n.getText(role.labelText, IQ.i18n.preferences.interfaceLanguage) })), "role");
     renderGrid("difficulty-grid", IQ.questions.DIFFICULTIES.map((difficulty) => ({ value: difficulty.id, label: t(`difficulty${capitalize(difficulty.id)}`), sub: `${difficulty.questionCount} ${t("questions")}` })), "difficulty");
-    renderGrid("gender-grid", [{ value: "sarah", label: "Sarah", sub: t("interviewerTitle") }, { value: "david", label: "David", sub: t("interviewerTitle") }], "interviewer");
+    renderGrid("gender-grid", [{ value: "sarah", label: interviewerDisplayName(INTERVIEWERS.sarah), sub: t("interviewerTitle") }, { value: "david", label: interviewerDisplayName(INTERVIEWERS.david), sub: t("interviewerTitle") }], "interviewer");
     renderGrid("personality-grid", [{ value: "friendly", label: t("personalityFriendly") }, { value: "professional", label: t("personalityProfessional") }, { value: "strict", label: t("personalityStrict") }], "personality");
     renderGrid("mode-grid", [{ value: "practice", label: t("practiceMode"), sub: t("practiceFeedback") }, { value: "real", label: t("realMode"), sub: t("communicationFeedback") }], "mode");
     el.demoSpeedToggle.checked = choices.demoSpeed;
@@ -174,9 +179,10 @@
 
   function roleLabelFor(id) { return IQ.i18n.getText(IQ.questions.getCareer(id).label, IQ.i18n.preferences.interfaceLanguage); }
   function labelForDifficulty(id) { return t(`difficulty${capitalize(id)}`); }
+  function interviewerDisplayName(interviewer) { return t((interviewer || INTERVIEWERS.sarah).labelKey); }
   function interviewerRoleLabel() {
     return t("interviewerRoleLabel", {
-      interviewer: session.interviewerName,
+      interviewer: interviewerDisplayName(session.interviewer),
       role: roleLabelFor(session.roleId),
       difficulty: labelForDifficulty(session.difficultyId),
     });
@@ -194,7 +200,7 @@
       personality: choices.personality,
       mode: choices.mode,
       demoSpeed: choices.demoSpeed,
-      interviewerName: interviewer.name,
+      interviewerName: interviewerDisplayName(interviewer),
       usingAI: aiAvailableCached,
       plan,
       mainIndex: 0,
@@ -267,7 +273,16 @@
     if (opts.preserveInput && preservedPrepRemaining > 0) restorePrepTimer(preservedPrepRemaining);
     else if (!opts.preserveInput) startPrepTimer();
     updateControls();
+    if (opts.focusQuestion) focusCurrentQuestion();
     if (!result.ok && result.reason !== "unsupported" && result.reason !== "end") IQ.ui.toast(t("voiceUnavailable"));
+  }
+
+  function focusCurrentQuestion() {
+    requestAnimationFrame(() => {
+      if (!session || session.complete || !el.questionText) return;
+      try { el.questionText.focus({ preventScroll: false }); }
+      catch (error) { el.questionText.focus(); }
+    });
   }
 
   function renderCurrentTurn(options) {
@@ -282,9 +297,6 @@
       const dot = document.createElement("span");
       const isCurrent = index === session.mainIndex;
       dot.className = index < session.mainIndex ? "is-done" : isCurrent ? "is-current" : "";
-      if (isCurrent) dot.setAttribute("aria-current", "step");
-      const status = index < session.mainIndex ? t("questionCompletedState") : isCurrent ? t("questionCurrentState") : "";
-      dot.setAttribute("aria-label", t("questionProgressAria", { number: index + 1, state: status }));
       el.progressDots.appendChild(dot);
     }
     el.questionText.textContent = question.text.en;
@@ -522,9 +534,21 @@
     const translationLocale = currentTranslationLanguage();
     el.practiceFeedbackPanel.hidden = false;
     el.feedbackScore.textContent = t("reportScore", { score: feedback.score });
-    // Coaching remains English-first so the learner can connect it to the scored answer.
-    el.feedbackStrength.textContent = feedback.strength.en;
-    el.feedbackImprovement.textContent = feedback.improvement.en;
+    // English remains the scored and spoken source; a selected translation is shown separately.
+    const sourceStrength = feedback.strength.en;
+    const sourceImprovement = feedback.improvement.en;
+    const translatedStrength = feedback.strength[translationLocale];
+    const translatedImprovement = feedback.improvement[translationLocale];
+    el.feedbackStrength.textContent = sourceStrength;
+    el.feedbackImprovement.textContent = sourceImprovement;
+    const showStrengthTranslation = translationLocale !== "en" && translatedStrength && translatedStrength !== sourceStrength;
+    const showImprovementTranslation = translationLocale !== "en" && translatedImprovement && translatedImprovement !== sourceImprovement;
+    el.feedbackStrengthTranslation.hidden = !showStrengthTranslation;
+    el.feedbackStrengthTranslation.textContent = showStrengthTranslation ? `${t("translation")}: ${translatedStrength}` : "";
+    el.feedbackStrengthTranslation.dir = IQ.i18n.getLanguage(translationLocale).dir;
+    el.feedbackImprovementTranslation.hidden = !showImprovementTranslation;
+    el.feedbackImprovementTranslation.textContent = showImprovementTranslation ? `${t("translation")}: ${translatedImprovement}` : "";
+    el.feedbackImprovementTranslation.dir = IQ.i18n.getLanguage(translationLocale).dir;
     el.feedbackIndicators.innerHTML = "";
     feedback.indicators.forEach((indicator) => {
       const chip = document.createElement("span");
@@ -590,6 +614,7 @@
     restorePrepTimer(snapshot.prepRemaining);
     setInterviewerState("waiting", t("yourTurn"));
     updateControls();
+    focusCurrentQuestion();
   }
 
   function hearPracticeFeedback() {
@@ -603,7 +628,7 @@
     if (!isCurrent(token) || session.complete) return;
     const reaction = session.pendingTurn;
     session.pendingTurn = null;
-    await presentCurrentQuestion({ reaction });
+    await presentCurrentQuestion({ reaction, focusQuestion: true });
   }
 
   async function decideNextTurn(entry, opts, token) {

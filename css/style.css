@@ -8,7 +8,7 @@
   --border: #d7cbbd;
   --border-strong: #b7a28c;
   --text: #172638;
-  --text-muted: #67717a;
+  --text-muted: #626d76;
   --primary: #203d58;
   --primary-strong: #112f49;
   --on-primary: #fffdf8;
@@ -43,7 +43,7 @@ button, select, textarea { font: inherit; }
 button, select { cursor: pointer; touch-action: manipulation; }
 button:disabled { cursor: not-allowed; opacity: .46; }
 :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
-[data-view-focus], #practice-feedback-title { scroll-margin-block-start: 96px; }
+[data-view-focus], #practice-feedback-title, #question-text { scroll-margin-block-start: 96px; }
 [hidden] { display: none !important; }
 h1, h2, h3, p { margin-block: 0; }
 button, select, textarea, .option-btn, .report-metric, .feedback-grid article, .report-top-side { min-inline-size: 0; }

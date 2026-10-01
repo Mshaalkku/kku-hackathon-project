@@ -43,6 +43,14 @@ The fallback is complete: deterministic interview stages, professional office UI
 
 Use **Preview an example report** to see invented demo content immediately.
 
+## Manual UI quality check
+
+Before presenting the app, use **Demo speed** to complete setup → interview → feedback → report in about a minute. Check the same path with typing only, keyboard navigation, and an unavailable microphone.
+
+- Check 320px, 375px, 390px, 660px, 860px, and desktop widths, plus a short landscape viewport: controls must wrap without horizontal scrolling.
+- Switch the interface through Arabic (RTL), German, and Hindi: localized chrome must wrap cleanly, selected cards and the identity panel must mirror correctly in RTL, and English interview prompts must remain LTR.
+- After each real next question, keyboard focus should land on the visible question; it must never remain in hidden feedback. Check reduced motion and forced-colors modes retain a visible focus indicator.
+
 ## Optional live AI follow-ups and report coaching
 
 The AI path is optional. It only adds a bounded, answer-specific follow-up and optional coaching; it never controls or can break the core interview sequence.

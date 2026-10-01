@@ -62,7 +62,7 @@
         <button id="btn-end-interview" class="btn btn-danger-outline" type="button" data-i18n="endInterview">End Interview</button>
       </div>
     </div>
-    <div id="progress-dots" class="progress-dots" data-i18n-aria-label="interviewProgress" aria-label="Interview progress"></div>
+    <div id="progress-dots" class="progress-dots" aria-hidden="true"></div>
 
     <div class="interview-room">
       <section id="office-scene" class="office-scene" data-i18n-aria-label="professionalInterviewRoom" aria-label="Professional interview room">
@@ -81,14 +81,14 @@
 
       <section class="conversation-workspace" data-i18n-aria-label="interviewConversation" aria-label="Interview conversation">
         <div class="question-card">
-          <p id="question-text" class="question-text" dir="ltr">Loading your first question…</p>
+          <h2 id="question-text" class="question-text" tabindex="-1" dir="ltr" aria-describedby="stage-label question-progress">Loading your first question…</h2>
           <div id="question-translation" class="translation-block" hidden dir="auto"><span class="translation-label" data-i18n="translation">Translation</span><p id="question-translation-text"></p></div>
           <p id="prep-timer" class="prep-timer" hidden></p>
         </div>
         <div id="hint-panel" class="hint-panel" hidden><strong data-i18n="hint">Hint</strong><p id="hint-text"></p><div id="hint-translation" class="translation-block compact" hidden dir="auto"></div></div>
         <section id="practice-feedback-panel" class="practice-feedback-panel" hidden aria-live="polite" aria-labelledby="practice-feedback-title">
           <div class="feedback-heading"><div><p class="eyebrow" data-i18n="practiceFeedback">Practice feedback</p><h2 id="practice-feedback-title" tabindex="-1" data-i18n="applyBeforeNext">Apply this before the next question</h2></div><span id="feedback-score" class="feedback-score">0 / 100</span></div>
-          <div class="feedback-grid"><article><h3 data-i18n="whatWentWell">What went well</h3><p id="feedback-strength"></p></article><article><h3 data-i18n="improveNext">Improve next</h3><p id="feedback-improvement"></p></article></div>
+          <div class="feedback-grid"><article><h3 data-i18n="whatWentWell">What went well</h3><p id="feedback-strength"></p><div id="feedback-strength-translation" class="translation-block compact" hidden dir="auto"></div></article><article><h3 data-i18n="improveNext">Improve next</h3><p id="feedback-improvement"></p><div id="feedback-improvement-translation" class="translation-block compact" hidden dir="auto"></div></article></div>
           <div id="feedback-indicators" class="feedback-indicators"></div>
           <div class="feedback-tip"><strong data-i18n="practicalTip">Practical tip</strong><p id="feedback-tip-text"></p><div id="feedback-tip-translation" class="translation-block compact" hidden dir="auto"></div></div>
           <div class="feedback-actions" role="group" data-i18n-aria-label="practiceFeedbackActions" aria-label="Practice feedback actions"><button id="btn-continue-interview" class="btn btn-primary" type="button" data-i18n="continueInterview">Continue Interview</button><button id="btn-retry-answer" class="btn btn-secondary" type="button" data-i18n="retryAnswer">Improve / Retry Answer</button><button id="btn-hear-feedback" class="btn btn-text" type="button" data-i18n="hearFeedback">Hear feedback</button></div>
