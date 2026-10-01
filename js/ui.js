@@ -31,13 +31,30 @@ window.IQ = window.IQ || {};
     );
   }
 
-  function showView(viewId) {
+  function showView(viewId, focusTarget) {
     document.querySelectorAll(".view").forEach((v) => {
       v.hidden = v.id !== viewId;
     });
     const target = document.getElementById(viewId);
-    if (target) target.scrollIntoView({ behavior: "instant", block: "start" });
+    if (target) {
+      try {
+        target.scrollIntoView({ behavior: "instant", block: "start" });
+      } catch (error) {
+        target.scrollIntoView(true);
+      }
+    }
     window.scrollTo(0, 0);
+    const destination = typeof focusTarget === "string"
+      ? document.querySelector(focusTarget)
+      : focusTarget || (target && target.querySelector("[data-view-focus]"));
+    if (!destination) return;
+    requestAnimationFrame(() => {
+      try {
+        destination.focus({ preventScroll: true });
+      } catch (error) {
+        destination.focus();
+      }
+    });
   }
 
   function toast(message, type) {
@@ -55,19 +72,19 @@ window.IQ = window.IQ || {};
     if (!hud) return;
     hud.hidden = false;
     const progress = IQ.game.xpProgress(state.xp);
-    document.getElementById("hud-level").textContent = "Lv." + progress.level;
+    document.getElementById("hud-level").textContent = IQ.i18n.t("levelValue", { level: progress.level });
     document.getElementById("hud-xp-fill").style.width = progress.pct + "%";
-    document.getElementById("hud-xp-text").textContent = progress.into + " / " + progress.needed + " XP";
-    document.getElementById("hud-streak").textContent = state.streak;
+    document.getElementById("hud-xp-text").textContent = IQ.i18n.t("xpValue", { current: progress.into, needed: progress.needed });
+    document.getElementById("hud-streak").textContent = IQ.i18n.t("streakValue", { count: state.streak });
     document.getElementById("hud-level-icon").innerHTML = icon("star");
     document.getElementById("hud-streak-icon").innerHTML = icon("flame");
   }
 
   const POWERUP_DEF = [
-    { key: "thinkTime", label: "Think Time", iconName: "clock", id: "pu-thinktime" },
-    { key: "secondChance", label: "Second Chance", iconName: "retry", id: "pu-secondchance" },
-    { key: "hint", label: "Hint", iconName: "bulb", id: "pu-hint" },
-    { key: "doubleXP", label: "2x XP", iconName: "bolt", id: "pu-doublexp" },
+    { key: "thinkTime", labelKey: "powerUpThinkTime", iconName: "clock", id: "pu-thinktime" },
+    { key: "secondChance", labelKey: "powerUpSecondChance", iconName: "retry", id: "pu-secondchance" },
+    { key: "hint", labelKey: "powerUpHint", iconName: "bulb", id: "pu-hint" },
+    { key: "doubleXP", labelKey: "powerUpDoubleXp", iconName: "bolt", id: "pu-doublexp" },
   ];
 
   function renderPowerUps(state, onUse, options) {
@@ -78,18 +95,23 @@ window.IQ = window.IQ || {};
 
     POWERUP_DEF.forEach((def) => {
       const count = state.powerUps[def.key] || 0;
+      const label = IQ.i18n.t(def.labelKey);
       const btn = document.createElement("button");
       btn.type = "button";
       btn.className = "powerup-btn";
       btn.id = def.id;
       const disabled = count <= 0 || Boolean(opts.disabled);
       btn.disabled = disabled;
-      btn.title = count <= 0 ? "Earn more by completing interviews" : `${def.label}: ${count} available`;
-      btn.setAttribute("aria-label", `${def.label}: ${count} available${disabled ? ", unavailable" : ""}`);
-      btn.innerHTML = icon(def.iconName) + "<span>" + def.label + "</span><span class=\"powerup-count\" aria-hidden=\"true\">" + count + "</span>";
+      btn.title = count <= 0
+        ? IQ.i18n.t("powerUpEarnMore")
+        : IQ.i18n.t("powerUpAvailable", { label, count });
+      btn.setAttribute("aria-label", disabled
+        ? IQ.i18n.t("powerUpUnavailable", { label, count })
+        : IQ.i18n.t("powerUpAvailable", { label, count }));
+      btn.innerHTML = icon(def.iconName) + "<span>" + label + "</span><span class=\"powerup-count\" aria-hidden=\"true\">" + count + "</span>";
       btn.addEventListener("click", () => {
         if (disabled) {
-          if (count <= 0) toast("Earn more " + def.label + " by completing interviews.");
+          if (count <= 0) toast(IQ.i18n.t("powerUpEarnMoreLabel", { label }));
           return;
         }
         onUse(def.key);
@@ -97,14 +119,17 @@ window.IQ = window.IQ || {};
       bar.appendChild(btn);
     });
 
+    const replayLabel = IQ.i18n.t("replayQuestion");
     const replayBtn = document.createElement("button");
     replayBtn.type = "button";
     replayBtn.className = "powerup-btn";
     replayBtn.id = "pu-replay";
     replayBtn.disabled = Boolean(opts.disabled);
-    replayBtn.title = "Replay question";
-    replayBtn.setAttribute("aria-label", replayBtn.disabled ? "Replay question, unavailable" : "Replay question");
-    replayBtn.innerHTML = icon("replay") + "<span>Replay question</span>";
+    replayBtn.title = replayLabel;
+    replayBtn.setAttribute("aria-label", replayBtn.disabled
+      ? IQ.i18n.t("powerUpUnavailable", { label: replayLabel, count: 0 })
+      : replayLabel);
+    replayBtn.innerHTML = icon("replay") + "<span>" + replayLabel + "</span>";
     replayBtn.addEventListener("click", () => { if (!replayBtn.disabled) onUse("replay"); });
     bar.appendChild(replayBtn);
   }

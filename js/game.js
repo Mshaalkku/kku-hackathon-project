@@ -22,15 +22,23 @@ window.IQ = window.IQ || {};
   };
 
   const ACHIEVEMENTS = [
-    { id: "first_steps", name: "First Steps", desc: "Complete your first interview.", check: (s) => s.interviewsCompleted >= 1 },
-    { id: "clean_speaker", name: "Clean Speaker", desc: "Finish an interview with zero filler words.", check: (s, last) => last && last.totalFillers === 0 },
-    { id: "star_student", name: "STAR Student", desc: "Use the STAR structure well in 3+ answers in one interview.", check: (s, last) => last && last.starAnswers >= 3 },
-    { id: "level_5", name: "Rising Star", desc: "Reach level 5.", check: (s) => levelForXP(s.xp) >= 5 },
-    { id: "on_a_roll", name: "On a Roll", desc: "Reach a 3-day practice streak.", check: (s) => s.streak >= 3 },
-    { id: "dedicated", name: "Dedicated", desc: "Reach a 7-day practice streak.", check: (s) => s.streak >= 7 },
-    { id: "real_deal", name: "The Real Deal", desc: "Complete a Real Interview Mode session.", check: (s) => s.realModeCompleted >= 1 },
-    { id: "ai_conversationalist", name: "AI Conversationalist", desc: "Complete an interview with the live AI interviewer.", check: (s) => s.aiModeUsed === true },
+    { id: "first_steps", nameKey: "achievementFirstSteps", descKey: "achievementFirstStepsDesc", check: (s) => s.interviewsCompleted >= 1 },
+    { id: "clean_speaker", nameKey: "achievementCleanSpeaker", descKey: "achievementCleanSpeakerDesc", check: (s, last) => last && last.totalFillers === 0 },
+    { id: "star_student", nameKey: "achievementStarStudent", descKey: "achievementStarStudentDesc", check: (s, last) => last && last.starAnswers >= 3 },
+    { id: "level_5", nameKey: "achievementRisingStar", descKey: "achievementRisingStarDesc", check: (s) => levelForXP(s.xp) >= 5 },
+    { id: "on_a_roll", nameKey: "achievementOnARoll", descKey: "achievementOnARollDesc", check: (s) => s.streak >= 3 },
+    { id: "dedicated", nameKey: "achievementDedicated", descKey: "achievementDedicatedDesc", check: (s) => s.streak >= 7 },
+    { id: "real_deal", nameKey: "achievementRealDeal", descKey: "achievementRealDealDesc", check: (s) => s.realModeCompleted >= 1 },
+    { id: "ai_conversationalist", nameKey: "achievementAiConversationalist", descKey: "achievementAiConversationalistDesc", check: (s) => s.aiModeUsed === true },
   ];
+
+  function getAchievementName(achievement) {
+    return IQ.i18n.t(achievement.nameKey || "") || achievement.name || achievement.id;
+  }
+
+  function getAchievementDescription(achievement) {
+    return IQ.i18n.t(achievement.descKey || "") || achievement.desc || "";
+  }
 
   function load() {
     try {
@@ -145,6 +153,8 @@ window.IQ = window.IQ || {};
     answerXP,
     consumePowerUp,
     completeInterview,
+    getAchievementName,
+    getAchievementDescription,
     ACHIEVEMENTS,
     XP_PER_LEVEL,
   };

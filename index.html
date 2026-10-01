@@ -11,14 +11,14 @@
 <div id="toast-region" class="toast-region" aria-live="polite"></div>
 
 <header class="topbar">
-  <div class="brand" aria-label="Interview Quest">
+  <div class="brand" data-i18n-aria-label="brandLabel" aria-label="Interview Quest">
     <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 38" focusable="false"><path d="M8 2h16l-3 10-5 4-5-4z"/><path d="m11 17 5 4 5-4 3 16-8 3-8-3z"/></svg></span>
     <span class="brand-name">Interview Quest</span>
   </div>
   <div id="hud" class="hud" hidden>
-    <div class="hud-item hud-level" title="Level"><span class="hud-icon" id="hud-level-icon" aria-hidden="true"></span><span id="hud-level">Lv.1</span></div>
-    <div class="hud-item hud-xp" title="XP progress"><div class="xp-bar"><div id="hud-xp-fill" class="xp-bar-fill" style="width:0%"></div></div><span id="hud-xp-text" class="hud-xp-text">0 XP</span></div>
-    <div class="hud-item hud-streak" title="Practice streak"><span class="hud-icon" id="hud-streak-icon" aria-hidden="true"></span><span id="hud-streak">0</span></div>
+    <div class="hud-item hud-level" data-i18n-title="hudLevelTitle" title="Level"><span class="hud-icon" id="hud-level-icon" aria-hidden="true"></span><span id="hud-level">Lv.1</span></div>
+    <div class="hud-item hud-xp" data-i18n-title="hudXpTitle" title="XP progress"><div class="xp-bar"><div id="hud-xp-fill" class="xp-bar-fill" style="width:0%"></div></div><span id="hud-xp-text" class="hud-xp-text">0 XP</span></div>
+    <div class="hud-item hud-streak" data-i18n-title="hudStreakTitle" title="Practice streak"><span class="hud-icon" id="hud-streak-icon" aria-hidden="true"></span><span id="hud-streak">0</span></div>
   </div>
 </header>
 
@@ -26,16 +26,16 @@
   <section id="view-setup" class="view setup-view" aria-labelledby="setup-title">
     <div class="setup-brief">
       <div>
-        <p class="eyebrow">Voice-first career practice</p>
-        <h1 id="setup-title" data-i18n="appTagline">Practice a real job interview, out loud.</h1>
+        <p class="eyebrow" data-i18n="setupEyebrow">Voice-first career practice</p>
+        <h1 id="setup-title" data-view-focus tabindex="-1" data-i18n="appTagline">Practice a real job interview, out loud.</h1>
         <p class="subtitle"><span data-i18n="setupDescription">Speak your answers, hear Sarah or David respond, and get coached on English and answer structure.</span> <strong data-i18n="learningOnly">For learning only — not a real hiring assessment.</strong></p>
         <p id="player-summary" class="player-summary" hidden></p>
       </div>
-      <aside class="setup-assurance" aria-label="Practice approach"><span class="assurance-rule" aria-hidden="true"></span><p>Private, browser-based practice</p><span>Prepared for your next conversation</span></aside>
+      <aside class="setup-assurance" data-i18n-aria-label="practiceApproach" aria-label="Practice approach"><span class="assurance-rule" aria-hidden="true"></span><p data-i18n="privatePractice">Private, browser-based practice</p><span data-i18n="preparedConversation">Prepared for your next conversation</span></aside>
     </div>
 
-    <section class="language-panel" aria-label="Language preferences">
-      <p class="panel-kicker">Preferences</p>
+    <section class="language-panel" data-i18n-aria-label="languagePreferences" aria-label="Language preferences">
+      <p class="panel-kicker" data-i18n="preferences">Preferences</p>
       <div class="language-grid">
         <label class="field-label"><span data-i18n="interfaceLanguage">Interface language</span><select id="interface-language-select"></select></label>
         <label class="field-label"><span data-i18n="translationLanguage">Translation language</span><select id="translation-language-select"></select></label>
@@ -45,15 +45,15 @@
     </section>
 
     <div class="setup-selections">
-      <div class="setup-group"><h2 data-i18n="jobField">Job field</h2><div id="role-grid" class="option-grid" role="group" aria-label="Choose job field"></div></div>
-      <div class="selection-pair"><div class="setup-group"><h2 data-i18n="difficulty">Difficulty</h2><div id="difficulty-grid" class="option-grid option-grid-row" role="group" aria-label="Choose difficulty"></div></div><div class="setup-group"><h2 data-i18n="interviewer">Interviewer</h2><div id="gender-grid" class="option-grid option-grid-row interviewer-options" role="group" aria-label="Choose interviewer"></div></div></div>
-      <div class="selection-pair"><div class="setup-group"><h2 data-i18n="interviewStyle">Interviewer style</h2><div id="personality-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interviewer personality"></div></div><div class="setup-group"><h2 data-i18n="mode">Mode</h2><div id="mode-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interview mode"></div><p class="hint-text" data-i18n="modeExplanation">Practice gives concise feedback between answers. Real Interview Mode keeps coaching for the final report.</p></div></div>
+      <div class="setup-group"><h2 data-i18n="jobField">Job field</h2><div id="role-grid" class="option-grid" role="group" data-i18n-aria-label="chooseJobField" aria-label="Choose job field"></div></div>
+      <div class="selection-pair"><div class="setup-group"><h2 data-i18n="difficulty">Difficulty</h2><div id="difficulty-grid" class="option-grid option-grid-row" role="group" data-i18n-aria-label="chooseDifficulty" aria-label="Choose difficulty"></div></div><div class="setup-group"><h2 data-i18n="interviewer">Interviewer</h2><div id="gender-grid" class="option-grid option-grid-row interviewer-options" role="group" data-i18n-aria-label="chooseInterviewer" aria-label="Choose interviewer"></div></div></div>
+      <div class="selection-pair"><div class="setup-group"><h2 data-i18n="interviewStyle">Interviewer style</h2><div id="personality-grid" class="option-grid option-grid-row" role="group" data-i18n-aria-label="chooseInterviewerStyle" aria-label="Choose interviewer personality"></div></div><div class="setup-group"><h2 data-i18n="mode">Mode</h2><div id="mode-grid" class="option-grid option-grid-row" role="group" data-i18n-aria-label="chooseInterviewMode" aria-label="Choose interview mode"></div><p class="hint-text" data-i18n="modeExplanation">Practice gives concise feedback between answers. Real Interview Mode keeps coaching for the final report.</p></div></div>
     </div>
-    <div class="setup-launch"><div class="setup-group setup-row"><label class="checkbox-row"><input type="checkbox" id="demo-speed-toggle"><span data-i18n="demoSpeed">Demo speed</span><span data-i18n="demoSpeedDetail"> — fewer questions and short timers</span></label></div><p id="ai-status-note" class="ai-status-note">Checking for live AI interviewer…</p><div class="setup-actions"><button id="btn-start-interview" class="btn btn-primary btn-lg" type="button" data-i18n="startInterview">Start Interview</button><button id="btn-load-example" class="btn btn-ghost" type="button" data-i18n="loadExample">Preview an example report</button></div></div>
+    <div class="setup-launch"><div class="setup-group setup-row"><label class="checkbox-row"><input type="checkbox" id="demo-speed-toggle"><span data-i18n="demoSpeed">Demo speed</span><span data-i18n="demoSpeedDetail"> — fewer questions and short timers</span></label></div><p id="ai-status-note" class="ai-status-note" data-i18n="checkingAi">Checking for live AI interviewer…</p><div class="setup-actions"><button id="btn-start-interview" class="btn btn-primary btn-lg" type="button" data-i18n="startInterview">Start Interview</button><button id="btn-load-example" class="btn btn-ghost" type="button" data-i18n="loadExample">Preview an example report</button></div></div>
   </section>
 
   <section id="view-interview" class="view interview-view" hidden aria-labelledby="interview-title">
-    <h1 id="interview-title" class="sr-only">Interview in progress</h1>
+    <h1 id="interview-title" class="sr-only" data-view-focus tabindex="-1" data-i18n="interviewInProgress">Interview in progress</h1>
     <div class="interview-toolbar">
       <div><p id="stage-label" class="eyebrow">Introduction</p><p id="question-progress" class="question-progress">Question 1 of 6</p></div>
       <div class="toolbar-actions">
@@ -62,10 +62,10 @@
         <button id="btn-end-interview" class="btn btn-danger-outline" type="button" data-i18n="endInterview">End Interview</button>
       </div>
     </div>
-    <div id="progress-dots" class="progress-dots" aria-label="Interview progress"></div>
+    <div id="progress-dots" class="progress-dots" data-i18n-aria-label="interviewProgress" aria-label="Interview progress"></div>
 
     <div class="interview-room">
-      <section id="office-scene" class="office-scene" aria-label="Professional interview room">
+      <section id="office-scene" class="office-scene" data-i18n-aria-label="professionalInterviewRoom" aria-label="Professional interview room">
         <div class="office-glow" aria-hidden="true"></div>
         <div class="office-window" aria-hidden="true"><span></span><span></span><span></span></div>
         <div class="office-shelf" aria-hidden="true"><i></i><i></i><b></b></div>
@@ -79,27 +79,27 @@
         <div class="identity-card"><strong id="interviewer-name">Sarah</strong><span id="interviewer-role-label">Career Interviewer</span><span id="interviewer-status" class="interviewer-status" aria-live="polite">Getting ready…</span></div>
       </section>
 
-      <section class="conversation-workspace" aria-label="Interview conversation">
+      <section class="conversation-workspace" data-i18n-aria-label="interviewConversation" aria-label="Interview conversation">
         <div class="question-card">
           <p id="question-text" class="question-text" dir="ltr">Loading your first question…</p>
           <div id="question-translation" class="translation-block" hidden dir="auto"><span class="translation-label" data-i18n="translation">Translation</span><p id="question-translation-text"></p></div>
           <p id="prep-timer" class="prep-timer" hidden></p>
         </div>
-        <div id="hint-panel" class="hint-panel" hidden><strong>Hint</strong><p id="hint-text"></p><div id="hint-translation" class="translation-block compact" hidden dir="auto"></div></div>
+        <div id="hint-panel" class="hint-panel" hidden><strong data-i18n="hint">Hint</strong><p id="hint-text"></p><div id="hint-translation" class="translation-block compact" hidden dir="auto"></div></div>
         <section id="practice-feedback-panel" class="practice-feedback-panel" hidden aria-live="polite" aria-labelledby="practice-feedback-title">
-          <div class="feedback-heading"><div><p class="eyebrow" data-i18n="practiceFeedback">Practice feedback</p><h2 id="practice-feedback-title" data-i18n="applyBeforeNext">Apply this before the next question</h2></div><span id="feedback-score" class="feedback-score">0 / 100</span></div>
+          <div class="feedback-heading"><div><p class="eyebrow" data-i18n="practiceFeedback">Practice feedback</p><h2 id="practice-feedback-title" tabindex="-1" data-i18n="applyBeforeNext">Apply this before the next question</h2></div><span id="feedback-score" class="feedback-score">0 / 100</span></div>
           <div class="feedback-grid"><article><h3 data-i18n="whatWentWell">What went well</h3><p id="feedback-strength"></p></article><article><h3 data-i18n="improveNext">Improve next</h3><p id="feedback-improvement"></p></article></div>
           <div id="feedback-indicators" class="feedback-indicators"></div>
           <div class="feedback-tip"><strong data-i18n="practicalTip">Practical tip</strong><p id="feedback-tip-text"></p><div id="feedback-tip-translation" class="translation-block compact" hidden dir="auto"></div></div>
-          <div class="feedback-actions" role="group" aria-label="Practice feedback actions"><button id="btn-continue-interview" class="btn btn-primary" type="button" data-i18n="continueInterview">Continue Interview</button><button id="btn-retry-answer" class="btn btn-secondary" type="button" data-i18n="retryAnswer">Improve / Retry Answer</button><button id="btn-hear-feedback" class="btn btn-text" type="button" data-i18n="hearFeedback">Hear feedback</button></div>
+          <div class="feedback-actions" role="group" data-i18n-aria-label="practiceFeedbackActions" aria-label="Practice feedback actions"><button id="btn-continue-interview" class="btn btn-primary" type="button" data-i18n="continueInterview">Continue Interview</button><button id="btn-retry-answer" class="btn btn-secondary" type="button" data-i18n="retryAnswer">Improve / Retry Answer</button><button id="btn-hear-feedback" class="btn btn-text" type="button" data-i18n="hearFeedback">Hear feedback</button></div>
         </section>
         <div id="quick-tip-panel" class="quick-tip-panel" hidden><strong data-i18n="quickTip">Quick tip</strong><p id="quick-tip-text"></p></div>
         <div class="answer-area">
           <div id="live-transcript" class="live-transcript" aria-live="polite"></div>
-          <label class="input-label" for="answer-input">Your answer <span class="input-label-note">(typing is always available)</span></label>
-          <textarea id="answer-input" rows="5" dir="auto" placeholder="Type here, or start your answer with the microphone."></textarea>
-          <p id="mic-status-label" class="mic-status-label" aria-live="polite">Type your answer, or start the microphone when you are ready.</p>
-          <div class="voice-controls" role="group" aria-label="Answer controls">
+          <label class="input-label" for="answer-input"><span data-i18n="yourAnswer">Your answer</span> <span class="input-label-note" data-i18n="typingAlwaysAvailable">(typing is always available)</span></label>
+          <textarea id="answer-input" rows="5" dir="auto" data-i18n-placeholder="answerPlaceholder" placeholder="Type here, or start your answer with the microphone."></textarea>
+          <p id="mic-status-label" class="mic-status-label" aria-live="polite" data-i18n="typingReady">Type your answer, or start the microphone when you are ready.</p>
+          <div class="voice-controls" role="group" data-i18n-aria-label="answerControls" aria-label="Answer controls">
             <button id="btn-start-answer" class="btn btn-primary" type="button" data-i18n="startAnswer">Start Answer</button>
             <button id="btn-stop-answer" class="btn btn-secondary" type="button" data-i18n="stopAnswer">Stop Answer</button>
             <button id="btn-finish-answer" class="btn btn-primary" type="button" data-i18n="finishAnswer">Finish Answer</button>
@@ -107,16 +107,16 @@
             <button id="btn-repeat-question" class="btn btn-text" type="button" data-i18n="repeatQuestion">Repeat Question</button>
           </div>
         </div>
-        <div class="practice-tools-heading"><span>Practice tools</span><span>Optional support for this answer</span></div>
-        <div id="powerup-bar" class="powerup-bar" role="group" aria-label="Power-ups"></div>
+        <div class="practice-tools-heading"><span data-i18n="practiceTools">Practice tools</span><span data-i18n="practiceToolsDetail">Optional support for this answer</span></div>
+        <div id="powerup-bar" class="powerup-bar" role="group" data-i18n-aria-label="powerUps" aria-label="Power-ups"></div>
       </section>
     </div>
   </section>
 
   <section id="view-report" class="view" hidden aria-labelledby="report-title">
-    <div class="report-heading"><div><p class="eyebrow" data-i18n="trainingReport">Training Report</p><h1 id="report-title">Training Report</h1></div><label class="toggle-row report-translation-toggle"><input id="report-global-translation-toggle" type="checkbox"><span data-i18n="showTranslation">Show translation</span></label></div>
-    <p id="report-mode-note" class="report-mode-note"></p><p id="report-example-banner" class="report-example-banner" hidden>This is an example report so you can preview the feature — play a real interview to get your own.</p>
-    <div class="report-top"><div class="score-ring" id="report-score-ring" style="--pct:0"><div class="score-ring-inner"><span id="report-score-value" class="score-value">0</span><span class="score-label">/ 100</span></div></div><div class="report-top-side"><p id="report-xp-gained" class="report-xp-gained">+0 XP</p><p id="report-level-banner" class="report-level-banner" hidden></p><div id="report-achievements" class="report-achievements" hidden></div><dl class="report-highlights"><div><dt>Strongest skill</dt><dd id="report-strongest-skill"></dd></div><div><dt>Biggest improvement</dt><dd id="report-biggest-improvement"></dd></div></dl></div></div>
+    <div class="report-heading"><div><p class="eyebrow" data-i18n="trainingReport">Training Report</p><h1 id="report-title" data-view-focus tabindex="-1" data-i18n="trainingReport">Training Report</h1></div><label class="toggle-row report-translation-toggle"><input id="report-global-translation-toggle" type="checkbox"><span data-i18n="showTranslation">Show translation</span></label></div>
+    <p id="report-mode-note" class="report-mode-note"></p><p id="report-example-banner" class="report-example-banner" hidden data-i18n="exampleReportBanner">This is an example report so you can preview the feature — play a real interview to get your own.</p>
+    <div class="report-top"><div class="score-ring" id="report-score-ring" style="--pct:0"><div class="score-ring-inner"><span id="report-score-value" class="score-value">0</span><span class="score-label" data-i18n="outOf100">/ 100</span></div></div><div class="report-top-side"><p id="report-xp-gained" class="report-xp-gained">+0 XP</p><p id="report-level-banner" class="report-level-banner" hidden></p><div id="report-achievements" class="report-achievements" hidden></div><dl class="report-highlights"><div><dt data-i18n="strongestSkill">Strongest skill</dt><dd id="report-strongest-skill"></dd></div><div><dt data-i18n="biggestImprovement">Biggest improvement</dt><dd id="report-biggest-improvement"></dd></div></dl></div></div>
     <div id="report-summary" class="report-summary"></div>
     <div class="report-columns"><div class="report-col"><h2 data-i18n="strengths">Strengths</h2><ul id="report-strengths" class="report-list report-list-good"></ul></div><div class="report-col"><h2 data-i18n="areasToPractice">Areas to practice</h2><ul id="report-weaknesses" class="report-list report-list-bad"></ul></div></div>
     <section class="report-section"><h2 data-i18n="interviewSignals">Interview practice signals</h2><p class="report-section-note" data-i18n="signalsNote">These transparent learning indicators reflect the structure of your responses, not hiring suitability.</p><div id="report-metrics" class="report-metrics"></div></section>
@@ -128,7 +128,7 @@
 </main>
 <footer class="footer-note" data-i18n="learningOnly">Interview Quest is a practice tool. Scores and feedback are for learning only, not a real hiring decision.</footer>
 
-<dialog id="end-interview-dialog" class="confirm-dialog" aria-labelledby="end-dialog-title"><form method="dialog"><h2 id="end-dialog-title">End this interview?</h2><p>You will receive a partial training report from the answers you have completed. Your unfinished question will not be submitted.</p><div class="dialog-actions"><button id="btn-cancel-end" class="btn btn-ghost" value="cancel" type="submit">Keep practicing</button><button id="btn-confirm-end" class="btn btn-danger" value="confirm" type="submit">End and view report</button></div></form></dialog>
+<dialog id="end-interview-dialog" class="confirm-dialog" aria-labelledby="end-dialog-title" aria-describedby="end-dialog-description"><form method="dialog"><h2 id="end-dialog-title" data-i18n="endDialogTitle">End this interview?</h2><p id="end-dialog-description" data-i18n="endDialogDescription">You will receive a partial training report from the answers you have completed. Your unfinished question will not be submitted.</p><div class="dialog-actions"><button id="btn-cancel-end" class="btn btn-ghost" value="cancel" type="submit" data-i18n="keepPracticing">Keep practicing</button><button id="btn-confirm-end" class="btn btn-danger" value="confirm" type="submit" data-i18n="endAndViewReport">End and view report</button></div></form></dialog>
 
 <script src="sample-data/data.js"></script>
 <script src="js/i18n.js"></script>

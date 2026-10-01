@@ -72,10 +72,10 @@ window.IQ = window.IQ || {};
     const improvementKey = analysis.quickTipKey;
     const strengthKey = analysis.starHits >= 3 ? "star" : analysis.fillerCount === 0 && analysis.wordCount >= 20 ? "clean" : analysis.specificity ? "detail" : "completed";
     const indicators = [
-      { id: "detail", label: localized("clarity"), value: `${analysis.wordCount} words`, state: analysis.wordCount >= 20 ? "good" : "watch" },
+      { id: "detail", label: localized("clarity"), value: String(analysis.wordCount), state: analysis.wordCount >= 20 ? "good" : "watch" },
       { id: "star", label: { en: "STAR", ar: "STAR", es: "STAR", fr: "STAR", de: "STAR", hi: "STAR" }, value: `${analysis.starHits}/4`, state: analysis.starHits >= 3 ? "good" : "watch" },
-      { id: "fillers", label: { en: "Fillers", ar: "كلمات الحشو", es: "Muletillas", fr: "Mots de remplissage", de: "Füllwörter", hi: "भराव शब्द" }, value: analysis.fillerCount ? String(analysis.fillerCount) : "0", state: analysis.fillerCount === 0 ? "good" : "watch" },
-      { id: "focus", label: { en: "Role focus", ar: "تركيز الوظيفة", es: "Enfoque del puesto", fr: "Focus du poste", de: "Rollenfokus", hi: "भूमिका फोकस" }, value: roleFocus && roleFocus.en ? roleFocus.en : "Relevant evidence", state: analysis.specificity ? "good" : "watch" },
+      { id: "fillers", label: localized("fillers"), value: String(analysis.fillerCount), state: analysis.fillerCount === 0 ? "good" : "watch" },
+      { id: "focus", label: localized("roleFocus"), value: roleFocus && roleFocus.en ? roleFocus : localized("roleEvidence"), state: analysis.specificity ? "good" : "watch" },
     ];
     return { score: analysis.score, strength: localized(strengthKey), improvement: localized(improvementKey), tip: localized(improvementKey), strongerExample: Object.fromEntries(Object.keys(COPY).map((locale) => [locale, buildImprovedExample(locale)])), indicators };
   }

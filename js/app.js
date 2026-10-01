@@ -13,6 +13,7 @@
   let operationId = 0;
   let activeRequest = null;
   let reportModel = null;
+  let endDialogConfirmed = false;
   let el = {};
 
   const INTERVIEWERS = {
@@ -80,13 +81,24 @@
 
   function renderInterface() {
     IQ.i18n.applyDocumentLanguage();
+    document.title = `Interview Quest — ${t("appTagline")}`;
     document.querySelectorAll("[data-i18n]").forEach((node) => { node.textContent = t(node.dataset.i18n); });
+    document.querySelectorAll("[data-i18n-aria-label]").forEach((node) => { node.setAttribute("aria-label", t(node.dataset.i18nAriaLabel)); });
+    document.querySelectorAll("[data-i18n-title]").forEach((node) => { node.title = t(node.dataset.i18nTitle); });
+    document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => { node.placeholder = t(node.dataset.i18nPlaceholder); });
     buildSetupOptionGrids();
     const preferences = IQ.i18n.preferences;
     [el.interfaceLanguageSelect, el.translationLanguageSelect, el.interviewTranslationLanguageSelect].forEach((select) => { if (select) select.value = preferences[select === el.interfaceLanguageSelect ? "interfaceLanguage" : "translationLanguage"]; });
     el.interviewLanguageSelect.value = preferences.interviewLanguage;
     el.interviewLanguageNote.textContent = t("EnglishOnly");
-    if (session && !session.complete) renderCurrentTurn();
+    renderPlayerSummary();
+    updateAIStatusNote();
+    IQ.ui.renderHUD(gameState);
+    if (session && !session.complete) {
+      el.interviewerRoleLabel.textContent = interviewerRoleLabel();
+      renderCurrentTurn();
+      updateControls();
+    }
     if (reportModel) renderReport(reportModel.report, reportModel.meta);
   }
 
@@ -111,6 +123,10 @@
     el.btnEndInterview.addEventListener("click", showEndDialog);
     el.btnConfirmEnd.addEventListener("click", () => endInterviewEarly());
     el.btnCancelEnd.addEventListener("click", () => { if (el.endInterviewDialog.open) el.endInterviewDialog.close(); });
+    el.endInterviewDialog.addEventListener("close", () => {
+      if (!endDialogConfirmed) restoreEndInterviewFocus();
+      endDialogConfirmed = false;
+    });
     el.btnPlayAgain.addEventListener("click", backToSetup);
     el.btnBackSetup.addEventListener("click", backToSetup);
     el.subtitleToggle.addEventListener("change", () => renderQuestionTranslation());
@@ -121,14 +137,14 @@
     if (!gameState.interviewsCompleted) { el.playerSummary.hidden = true; return; }
     const progress = IQ.game.xpProgress(gameState.xp);
     el.playerSummary.hidden = false;
-    el.playerSummary.textContent = `Welcome back! Level ${progress.level} · ${gameState.xp} XP · ${gameState.streak}-day streak`;
+    el.playerSummary.textContent = t("playerSummary", { level: progress.level, xp: gameState.xp, streak: gameState.streak });
   }
 
   function buildSetupOptionGrids() {
-    renderGrid("role-grid", IQ.questions.ROLES.map((role) => ({ value: role.id, label: IQ.i18n.getText(role.labelText) })), "role");
-    renderGrid("difficulty-grid", IQ.questions.DIFFICULTIES.map((difficulty) => ({ value: difficulty.id, label: difficulty.label, sub: `${difficulty.questionCount} ${t("questions")}` })), "difficulty");
-    renderGrid("gender-grid", [{ value: "sarah", label: "Sarah", sub: INTERVIEWERS.sarah.title }, { value: "david", label: "David", sub: INTERVIEWERS.david.title }], "interviewer");
-    renderGrid("personality-grid", [{ value: "friendly", label: "Friendly" }, { value: "professional", label: "Professional" }, { value: "strict", label: "Strict" }], "personality");
+    renderGrid("role-grid", IQ.questions.ROLES.map((role) => ({ value: role.id, label: IQ.i18n.getText(role.labelText, IQ.i18n.preferences.interfaceLanguage) })), "role");
+    renderGrid("difficulty-grid", IQ.questions.DIFFICULTIES.map((difficulty) => ({ value: difficulty.id, label: t(`difficulty${capitalize(difficulty.id)}`), sub: `${difficulty.questionCount} ${t("questions")}` })), "difficulty");
+    renderGrid("gender-grid", [{ value: "sarah", label: "Sarah", sub: t("interviewerTitle") }, { value: "david", label: "David", sub: t("interviewerTitle") }], "interviewer");
+    renderGrid("personality-grid", [{ value: "friendly", label: t("personalityFriendly") }, { value: "professional", label: t("personalityProfessional") }, { value: "strict", label: t("personalityStrict") }], "personality");
     renderGrid("mode-grid", [{ value: "practice", label: t("practiceMode"), sub: t("practiceFeedback") }, { value: "real", label: t("realMode"), sub: t("communicationFeedback") }], "mode");
     el.demoSpeedToggle.checked = choices.demoSpeed;
   }
@@ -143,8 +159,8 @@
       button.className = "option-btn";
       const selected = choices[choiceKey] === item.value;
       button.setAttribute("aria-pressed", String(selected));
+      button.setAttribute("aria-label", selected ? t("selectedOption", { label: item.label }) : t("option", { label: item.label }));
       button.textContent = item.label;
-      if (selected) button.setAttribute("aria-label", `${item.label}, selected`);
       if (item.sub) { const sub = document.createElement("span"); sub.className = "option-sub"; sub.textContent = item.sub; button.appendChild(sub); }
       button.addEventListener("click", () => { choices[choiceKey] = item.value; buildSetupOptionGrids(); });
       container.appendChild(button);
@@ -152,13 +168,19 @@
   }
 
   function updateAIStatusNote() {
-    el.aiStatusNote.textContent = aiAvailableCached
-      ? "Live AI follow-ups are ready. The core interview plan remains reliable and on this device."
-      : "The built-in interview plan is ready. No key is needed for the complete offline fallback.";
+    el.aiStatusNote.textContent = aiAvailableCached ? t("aiLiveReady") : t("aiFallbackReady");
     el.aiStatusNote.className = `ai-status-note ${aiAvailableCached ? "is-live" : "is-fallback"}`;
   }
 
-  function roleLabelFor(id) { return IQ.i18n.getText(IQ.questions.getCareer(id).label, "en"); }
+  function roleLabelFor(id) { return IQ.i18n.getText(IQ.questions.getCareer(id).label, IQ.i18n.preferences.interfaceLanguage); }
+  function labelForDifficulty(id) { return t(`difficulty${capitalize(id)}`); }
+  function interviewerRoleLabel() {
+    return t("interviewerRoleLabel", {
+      interviewer: session.interviewerName,
+      role: roleLabelFor(session.roleId),
+      difficulty: labelForDifficulty(session.difficultyId),
+    });
+  }
 
   function newSession() {
     const plan = IQ.questions.getPlan(choices.role, choices.difficulty, choices.demoSpeed);
@@ -203,7 +225,7 @@
     state.set(IQ.interviewState.PHASES.SETUP);
     IQ.ui.showView("view-interview");
     el.interviewerName.textContent = session.interviewerName;
-    el.interviewerRoleLabel.textContent = `${session.interviewer.title} · ${session.roleLabel} · ${capitalize(session.difficultyId)}`;
+    el.interviewerRoleLabel.textContent = interviewerRoleLabel();
     el.characterSarah.hidden = session.interviewer.visualId !== "sarah";
     el.characterDavid.hidden = session.interviewer.visualId !== "david";
     el.subtitleToggle.checked = true;
@@ -254,14 +276,15 @@
     el.stageLabel.textContent = question.isFollowUp ? t("followUp") : IQ.i18n.getText(IQ.questions.STAGE_LABELS[question.stage] || { en: t("followUp") });
     const completedMain = session.mainIndex;
     const totalMain = session.plan.length;
-    el.questionProgress.textContent = `${t("interviewProgress")} · ${Math.min(completedMain + 1, totalMain)} / ${totalMain}`;
+    el.questionProgress.textContent = `${t("interviewProgress")} · ${t("questionProgress", { current: Math.min(completedMain + 1, totalMain), total: totalMain })}`;
     el.progressDots.innerHTML = "";
     for (let index = 0; index < totalMain; index += 1) {
       const dot = document.createElement("span");
       const isCurrent = index === session.mainIndex;
       dot.className = index < session.mainIndex ? "is-done" : isCurrent ? "is-current" : "";
       if (isCurrent) dot.setAttribute("aria-current", "step");
-      dot.setAttribute("aria-label", `Question ${index + 1}${index < session.mainIndex ? ", completed" : isCurrent ? ", current" : ""}`);
+      const status = index < session.mainIndex ? t("questionCompletedState") : isCurrent ? t("questionCurrentState") : "";
+      dot.setAttribute("aria-label", t("questionProgressAria", { number: index + 1, state: status }));
       el.progressDots.appendChild(dot);
     }
     el.questionText.textContent = question.text.en;
@@ -302,7 +325,7 @@
     el.btnHearFeedback.disabled = !controls.canHearFeedback;
     el.answerInput.disabled = state.phase === IQ.interviewState.PHASES.SUBMITTING || state.phase === IQ.interviewState.PHASES.CLOSING || state.phase === IQ.interviewState.PHASES.REVIEWING;
     if (state.phase === IQ.interviewState.PHASES.RECORDING) {
-      el.micStatusLabel.textContent = `${t("listening")} — ${t("stopAnswer")} keeps your text editable.`;
+      el.micStatusLabel.textContent = t("listeningStatus", { listening: t("listening"), stopAnswer: t("stopAnswer") });
     } else if (!IQ.speech.hasSTT) {
       el.micStatusLabel.textContent = t("speakFallback");
     } else if (state.phase === IQ.interviewState.PHASES.SUBMITTING) {
@@ -317,7 +340,7 @@
 
   function startAnswer() {
     if (!state.can("record")) return;
-    if (!IQ.speech.hasSTT) { IQ.ui.toast("Speech recognition is unavailable. You can type your answer."); return; }
+    if (!IQ.speech.hasSTT) { IQ.ui.toast(t("speechUnavailableToast")); return; }
     const token = session.id;
     const response = IQ.speech.startListening({
       onStart: () => {
@@ -345,18 +368,18 @@
 
   function handleSpeechError(reason) {
     const messages = {
-      not_allowed: "Microphone access was blocked. Type your answer, or allow microphone access and try again.",
-      no_speech: "No speech was detected. Your typed text is still available; try again if you wish.",
-      audio_capture: "No microphone was found. You can type your answer instead.",
-      network: "Speech recognition is temporarily unavailable. Continue by typing your answer.",
-      unsupported: "Speech recognition is unavailable in this browser. Continue by typing.",
-      start_failed: "The microphone could not start. Continue by typing your answer.",
+      not_allowed: t("speechNotAllowed"),
+      no_speech: t("speechNoSpeech"),
+      audio_capture: t("speechAudioCapture"),
+      network: t("speechNetwork"),
+      unsupported: t("speechUnsupported"),
+      start_failed: t("speechStartFailed"),
     };
     session.pendingFinish = false;
     if (state.phase === IQ.interviewState.PHASES.RECORDING || state.phase === IQ.interviewState.PHASES.STOPPING) state.set(IQ.interviewState.PHASES.READY);
     setInterviewerState("waiting", t("yourTurn"));
     updateControls();
-    if (reason !== "aborted") IQ.ui.toast(messages[reason] || "Voice input stopped. Your typed answer is still available.", "error");
+    if (reason !== "aborted") IQ.ui.toast(messages[reason] || t("speechStopped"), "error");
   }
 
   function stopAnswer() {
@@ -379,7 +402,7 @@
     if (state.phase === IQ.interviewState.PHASES.STOPPING) { session.pendingFinish = true; return; }
     if (!state.can("submit")) return;
     const answer = el.answerInput.value.trim();
-    if (!answer) { IQ.ui.toast("Please say or type an answer first, or choose Skip Question."); return; }
+    if (!answer) { IQ.ui.toast(t("answerRequired")); return; }
     submitAnswer(answer, {});
   }
 
@@ -406,7 +429,7 @@
     updatePrepTimer();
     schedulePrepTimer();
   }
-  function updatePrepTimer() { el.prepTimer.textContent = `Take a moment to think… ${session.prepRemaining}s`; }
+  function updatePrepTimer() { el.prepTimer.textContent = t("prepTimer", { seconds: session.prepRemaining }); }
   function extendPrepTimer(seconds) { if (!session.prepTimer) startPrepTimer(); session.prepRemaining += seconds; updatePrepTimer(); }
   function clearPrepTimer() { if (session && session.prepTimer) clearInterval(session.prepTimer); if (session) session.prepTimer = null; el.prepTimer.hidden = true; }
 
@@ -495,24 +518,36 @@
 
   function renderPracticeFeedback(entry) {
     const feedback = IQ.feedback.buildImmediateFeedback(entry.analysis, IQ.questions.getRoleFocus(session.roleId));
-    const locale = currentTranslationLanguage();
+    const interfaceLocale = IQ.i18n.preferences.interfaceLanguage;
+    const translationLocale = currentTranslationLanguage();
     el.practiceFeedbackPanel.hidden = false;
-    el.feedbackScore.textContent = `${feedback.score} / 100`;
+    el.feedbackScore.textContent = t("reportScore", { score: feedback.score });
+    // Coaching remains English-first so the learner can connect it to the scored answer.
     el.feedbackStrength.textContent = feedback.strength.en;
     el.feedbackImprovement.textContent = feedback.improvement.en;
     el.feedbackIndicators.innerHTML = "";
     feedback.indicators.forEach((indicator) => {
       const chip = document.createElement("span");
       chip.className = `feedback-indicator is-${indicator.state}`;
-      chip.textContent = `${indicator.label.en}: ${indicator.value}`;
+      const value = indicator.id === "detail"
+        ? t("feedbackWords", { count: entry.analysis.wordCount })
+        : indicator.id === "focus"
+          ? IQ.i18n.getText(indicator.value, interfaceLocale)
+          : indicator.value;
+      chip.textContent = `${IQ.i18n.getText(indicator.label, interfaceLocale)}: ${value}`;
       el.feedbackIndicators.appendChild(chip);
     });
-    const translation = feedback.tip[locale];
-    el.feedbackTipText.textContent = feedback.tip.en;
-    const showTranslation = locale !== "en" && translation && translation !== feedback.tip.en;
+    const translation = feedback.tip[translationLocale];
+    const sourceTip = feedback.tip.en;
+    el.feedbackTipText.textContent = sourceTip;
+    const showTranslation = translationLocale !== "en" && translation && translation !== sourceTip;
     el.feedbackTipTranslation.hidden = !showTranslation;
     el.feedbackTipTranslation.textContent = showTranslation ? `${t("translation")}: ${translation}` : "";
-    el.feedbackTipTranslation.dir = IQ.i18n.getLanguage(locale).dir;
+    el.feedbackTipTranslation.dir = IQ.i18n.getLanguage(translationLocale).dir;
+    requestAnimationFrame(() => {
+      try { document.getElementById("practice-feedback-title").focus({ preventScroll: true }); }
+      catch (error) { document.getElementById("practice-feedback-title").focus(); }
+    });
   }
 
   async function continueAfterFeedback() {
@@ -631,17 +666,17 @@
   async function usePowerUp(key) {
     if (!session || session.complete || state.controls().isBusy) return;
     if (key === "replay") {
-      if (session.mode === "real") { IQ.ui.toast("Replay is unavailable in Real Interview Mode."); return; }
+      if (session.mode === "real") { IQ.ui.toast(t("replayUnavailableReal")); return; }
       await presentCurrentQuestion({ preserveInput: true }); return;
     }
-    if (session.mode === "real" && ["hint", "secondChance"].includes(key)) { IQ.ui.toast("This learning aid is reserved for Practice Mode."); return; }
+    if (session.mode === "real" && ["hint", "secondChance"].includes(key)) { IQ.ui.toast(t("learningAidPracticeOnly")); return; }
     if (key === "secondChance" && (!session.lastSubmission || !session.transcript.length)) {
-      IQ.ui.toast("Nothing has been submitted yet, so there is nothing to redo.");
+      IQ.ui.toast(t("nothingToRedo"));
       return;
     }
-    if (!IQ.game.consumePowerUp(gameState, key)) { IQ.ui.toast("None left — complete interviews to earn more."); return; }
-    if (key === "thinkTime") { extendPrepTimer(session.demoSpeed ? 10 : 20); IQ.ui.toast("Extra thinking time added.", "success"); }
-    if (key === "doubleXP") { session.activePowerUps.doubleXPNext = true; IQ.ui.toast("2× XP is active for your next answer.", "success"); }
+    if (!IQ.game.consumePowerUp(gameState, key)) { IQ.ui.toast(t("noPowerUpsLeft")); return; }
+    if (key === "thinkTime") { extendPrepTimer(session.demoSpeed ? 10 : 20); IQ.ui.toast(t("extraThinkTime"), "success"); }
+    if (key === "doubleXP") { session.activePowerUps.doubleXPNext = true; IQ.ui.toast(t("doubleXpActive"), "success"); }
     if (key === "hint") { session.hintUsedForCurrent = true; showHint(); }
     if (key === "secondChance") useSecondChance();
     IQ.ui.renderHUD(gameState);
@@ -680,7 +715,7 @@
     session.lastSubmission = null;
     state.set(IQ.interviewState.PHASES.READY);
     renderCurrentTurn();
-    el.questionText.textContent += " (try this one again)";
+    el.questionText.textContent += ` ${t("retryQuestionSuffix")}`;
     setInterviewerState("waiting", t("yourTurn"));
     updateControls();
     showHint();
@@ -688,11 +723,24 @@
 
   function showEndDialog() {
     if (!session || !state.controls().canEnd) return;
-    if (typeof el.endInterviewDialog.showModal === "function") el.endInterviewDialog.showModal();
-    else if (window.confirm("End this interview and view a partial report?")) endInterviewEarly();
+    if (typeof el.endInterviewDialog.showModal === "function") {
+      el.endInterviewDialog.showModal();
+      requestAnimationFrame(() => el.btnCancelEnd.focus());
+    } else if (window.confirm(`${t("endDialogTitle")}\n\n${t("endDialogDescription")}`)) {
+      endInterviewEarly();
+    }
+  }
+
+  function restoreEndInterviewFocus() {
+    requestAnimationFrame(() => {
+      if (!session || session.complete) return;
+      try { el.btnEndInterview.focus({ preventScroll: true }); }
+      catch (error) { el.btnEndInterview.focus(); }
+    });
   }
 
   function endInterviewEarly() {
+    endDialogConfirmed = true;
     if (el.endInterviewDialog.open) el.endInterviewDialog.close();
     if (!session || session.complete) return;
     finishInterview({ partial: true, skipClosingSpeech: true });
@@ -707,7 +755,7 @@
     cancelActiveWork();
     if (!session || session.id !== token) return;
     state.set(IQ.interviewState.PHASES.CLOSING);
-    setInterviewerState("thinking", "Preparing your training report…");
+    setInterviewerState("thinking", t("preparingReport"));
     updateControls();
     if (!opts.skipClosingSpeech) {
       const closing = "Thank you for practicing with me today. Your training report is ready.";
@@ -729,7 +777,7 @@
         }, { signal: activeRequest.signal });
         report = IQ.feedback.mergeAIReport(report, aiReport);
       } catch (error) {
-        if (error.name !== "AbortError") IQ.ui.toast("Your complete local training report is ready; AI coaching was unavailable.");
+        if (error.name !== "AbortError") IQ.ui.toast(t("aiCoachingUnavailable"));
       } finally { activeRequest = null; }
     }
     const totalFillers = session.transcript.reduce((sum, entry) => sum + (entry.analysis ? entry.analysis.fillerCount : 0), 0);
@@ -755,7 +803,7 @@
     (values || []).forEach((value, index) => {
       const item = document.createElement("li");
       item.textContent = value;
-      if (showTranslation && translationValues && translationValues[index]) item.appendChild(translationNode(translationValues[index]));
+      if (showTranslation && translationValues && translationValues[index] && translationValues[index] !== value) item.appendChild(translationNode(translationValues[index]));
       container.appendChild(item);
     });
   }
@@ -777,28 +825,30 @@
     const locale = currentTranslationLanguage();
     const translation = (report.translations || {})[locale] || {};
     const showTranslation = el.reportGlobalTranslationToggle.checked && locale !== "en";
-    el.reportModeNote.textContent = `${meta.roleLabel} · ${capitalize(meta.difficulty)} · ${meta.mode === "real" ? t("realMode") : t("practiceMode")} · ${meta.isPartial ? t("partialReport") : "Completed"}`;
+    const roleLabel = meta.isExample ? meta.roleLabel : roleLabelFor(session ? session.roleId : choices.role);
+    const difficulty = labelForDifficulty(meta.difficulty);
+    el.reportModeNote.textContent = t("reportModeNote", { role: roleLabel, difficulty, mode: meta.mode === "real" ? t("realMode") : t("practiceMode"), status: meta.isPartial ? t("partialReport") : t("completed") });
     el.reportExampleBanner.hidden = !meta.isExample;
     const score = Math.max(0, Math.min(100, Math.round(report.overallScore || 0)));
     el.reportScoreRing.style.setProperty("--pct", score);
     el.reportScoreRing.style.setProperty("--score-color", scoreColor(score));
     el.reportScoreValue.textContent = score;
-    el.reportXpGained.textContent = `+${meta.xpGained} XP`;
+    el.reportXpGained.textContent = t("xpGained", { xp: meta.xpGained });
     el.reportStrongestSkill.textContent = report.strongestSkill || (report.strengths || [""])[0];
     el.reportBiggestImprovement.textContent = report.biggestImprovement || (report.weaknesses || [""])[0];
     el.reportSummary.innerHTML = "";
     const summary = document.createElement("p"); summary.textContent = report.summary || ""; el.reportSummary.appendChild(summary);
-    if (showTranslation && translation.summary) el.reportSummary.appendChild(translationNode(translation.summary));
-    if (meta.leveledUp) { el.reportLevelBanner.hidden = false; el.reportLevelBanner.textContent = `Level up! You reached Level ${meta.newLevel}.`; } else el.reportLevelBanner.hidden = true;
+    if (showTranslation && translation.summary && translation.summary !== summary.textContent) el.reportSummary.appendChild(translationNode(translation.summary));
+    if (meta.leveledUp) { el.reportLevelBanner.hidden = false; el.reportLevelBanner.textContent = t("levelUp", { level: meta.newLevel }); } else el.reportLevelBanner.hidden = true;
     el.reportAchievements.hidden = !(meta.newAchievements && meta.newAchievements.length);
     el.reportAchievements.innerHTML = "";
-    (meta.newAchievements || []).forEach((achievement) => { const chip = document.createElement("span"); chip.className = "achievement-chip"; chip.title = achievement.desc; chip.innerHTML = IQ.ui.icon("star"); const label = document.createElement("span"); label.textContent = achievement.name; chip.appendChild(label); el.reportAchievements.appendChild(chip); });
+    (meta.newAchievements || []).forEach((achievement) => { const chip = document.createElement("span"); chip.className = "achievement-chip"; chip.title = IQ.game.getAchievementDescription(achievement); chip.innerHTML = IQ.ui.icon("star"); const label = document.createElement("span"); label.textContent = IQ.game.getAchievementName(achievement); chip.appendChild(label); el.reportAchievements.appendChild(chip); });
     createList(el.reportStrengths, report.strengths, translation.strengths, showTranslation);
     createList(el.reportWeaknesses, report.weaknesses, translation.weaknesses, showTranslation);
     renderReportMetrics(report.metrics || [], locale, showTranslation);
     el.reportEnglishFeedback.innerHTML = "";
     const feedback = document.createElement("span"); feedback.textContent = report.englishFeedback || ""; el.reportEnglishFeedback.appendChild(feedback);
-    if (showTranslation && translation.englishFeedback) el.reportEnglishFeedback.appendChild(translationNode(translation.englishFeedback));
+    if (showTranslation && translation.englishFeedback && translation.englishFeedback !== feedback.textContent) el.reportEnglishFeedback.appendChild(translationNode(translation.englishFeedback));
     renderPerQuestion(report, meta, locale, showTranslation);
     createList(el.reportNextSteps, report.nextSteps, translation.nextSteps, showTranslation);
   }
@@ -809,13 +859,13 @@
       const card = document.createElement("article");
       card.className = "report-metric";
       const heading = document.createElement("div"); heading.className = "metric-heading";
-      const title = document.createElement("h3"); title.textContent = item.label && item.label.en ? item.label.en : item.id;
-      const score = document.createElement("span"); score.className = "metric-score"; score.textContent = `${item.score} / 100`;
+      const title = document.createElement("h3"); title.textContent = IQ.i18n.getText(item.label, IQ.i18n.preferences.interfaceLanguage) || item.id;
+      const score = document.createElement("span"); score.className = "metric-score"; score.textContent = t("reportScore", { score: item.score });
       heading.append(title, score); card.appendChild(heading);
       const track = document.createElement("div"); track.className = "metric-track"; track.setAttribute("role", "progressbar"); track.setAttribute("aria-label", title.textContent); track.setAttribute("aria-valuemin", "0"); track.setAttribute("aria-valuemax", "100"); track.setAttribute("aria-valuenow", String(item.score));
       const fill = document.createElement("div"); fill.className = "metric-fill"; fill.style.width = `${item.score}%`; track.appendChild(fill); card.appendChild(track);
-      const description = document.createElement("p"); description.textContent = item.description && item.description.en ? item.description.en : ""; card.appendChild(description);
-      if (showTranslation && item.label && item.label[locale]) {
+      const description = document.createElement("p"); description.textContent = IQ.i18n.getText(item.description, IQ.i18n.preferences.interfaceLanguage); card.appendChild(description);
+      if (showTranslation && item.label && item.label[locale] && locale !== IQ.i18n.preferences.interfaceLanguage) {
         const translated = document.createElement("div"); translated.className = "translation-block report-translation"; translated.dir = IQ.i18n.getLanguage(locale).dir;
         translated.textContent = `${item.label[locale]} — ${(item.description || {})[locale] || ""}`; card.appendChild(translated);
       }
