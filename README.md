@@ -36,8 +36,9 @@ The candidate's original spoken/transcribed or typed answer is always preserved 
 ## Run without AI — complete fallback
 
 1. Double-click `index.html` and open it in Microsoft Edge or Google Chrome.
-2. Choose a career, language preferences, interviewer, and **Demo speed** if you want a short run.
-3. Start the interview. Type answers or use browser microphone recognition when it is available.
+2. Enter the name you want to use for this interview, then choose a career, language preferences, interviewer, and **Demo speed** if you want a short run. The name stays only in the current browser session.
+3. Use the Sun/Moon button in the header to choose light or dark mode. That visual preference stays in this browser.
+4. Start the interview. Type answers or use browser microphone recognition when it is available.
 
 The fallback is complete: deterministic interview stages, professional office UI, contextual local follow-ups, immediate Practice feedback, scoring, multilingual subtitles/translations, XP, power-ups, and a detailed final report all work with no key, no server, and no network.
 
@@ -47,8 +48,10 @@ Use **Preview an example report** to see invented demo content immediately.
 
 Before presenting the app, use **Demo speed** to complete setup → interview → feedback → report in about a minute. Check the same path with typing only, keyboard navigation, and an unavailable microphone.
 
-- Check 320px, 375px, 390px, 660px, 860px, and desktop widths, plus a short landscape viewport: controls must wrap without horizontal scrolling.
-- Switch the interface through Arabic (RTL), German, and Hindi: localized chrome must wrap cleanly, selected cards and the identity panel must mirror correctly in RTL, and English interview prompts must remain LTR.
+- Check 320px, 360px, 375px, 390px, 412px, 430px, tablet, and desktop widths, plus narrow and large-phone landscape viewports: controls must fit with no horizontal scrolling or clipping.
+- Check both light and dark themes on setup, interview, feedback, the End Interview dialog, and the report. Reload after switching each theme to confirm the browser-local preference persists without changing game progress or language preferences.
+- Switch the interface through Arabic (RTL), German, and Hindi: localized chrome, the candidate field, selected cards, interview identity panel, dialog, and report must wrap cleanly; English interview prompts must remain LTR.
+- Verify blank and whitespace-only names are blocked with a focused inline error. Complete a real report and confirm the candidate name is shown only for that active session, never on the example report.
 - After each real next question, keyboard focus should land on the visible question; it must never remain in hidden feedback. Check reduced motion and forced-colors modes retain a visible focus indicator.
 
 ## Optional live AI follow-ups and report coaching

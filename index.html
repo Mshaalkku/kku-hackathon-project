@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Interview Quest — Voice Interview Trainer</title>
+<script src="js/theme.js"></script>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -15,10 +16,13 @@
     <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 38" focusable="false"><path d="M8 2h16l-3 10-5 4-5-4z"/><path d="m11 17 5 4 5-4 3 16-8 3-8-3z"/></svg></span>
     <span class="brand-name">Interview Quest</span>
   </div>
-  <div id="hud" class="hud" hidden>
-    <div class="hud-item hud-level" data-i18n-title="hudLevelTitle" title="Level"><span class="hud-icon" id="hud-level-icon" aria-hidden="true"></span><span id="hud-level">Lv.1</span></div>
-    <div class="hud-item hud-xp" data-i18n-title="hudXpTitle" title="XP progress"><div class="xp-bar"><div id="hud-xp-fill" class="xp-bar-fill" style="width:0%"></div></div><span id="hud-xp-text" class="hud-xp-text">0 XP</span></div>
-    <div class="hud-item hud-streak" data-i18n-title="hudStreakTitle" title="Practice streak"><span class="hud-icon" id="hud-streak-icon" aria-hidden="true"></span><span id="hud-streak">0</span></div>
+  <div class="topbar-actions">
+    <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false" title="Switch to dark theme"></button>
+    <div id="hud" class="hud" hidden>
+      <div class="hud-item hud-level" data-i18n-title="hudLevelTitle" title="Level"><span class="hud-icon" id="hud-level-icon" aria-hidden="true"></span><span id="hud-level">Lv.1</span></div>
+      <div class="hud-item hud-xp" data-i18n-title="hudXpTitle" title="XP progress"><div class="xp-bar"><div id="hud-xp-fill" class="xp-bar-fill" style="width:0%"></div></div><span id="hud-xp-text" class="hud-xp-text">0 XP</span></div>
+      <div class="hud-item hud-streak" data-i18n-title="hudStreakTitle" title="Practice streak"><span class="hud-icon" id="hud-streak-icon" aria-hidden="true"></span><span id="hud-streak">0</span></div>
+    </div>
   </div>
 </header>
 
@@ -33,6 +37,12 @@
       </div>
       <aside class="setup-assurance" data-i18n-aria-label="practiceApproach" aria-label="Practice approach"><span class="assurance-rule" aria-hidden="true"></span><p data-i18n="privatePractice">Private, browser-based practice</p><span data-i18n="preparedConversation">Prepared for your next conversation</span></aside>
     </div>
+
+    <section class="candidate-panel" aria-labelledby="candidate-name-label">
+      <label class="field-label candidate-name-field" for="candidate-name"><span id="candidate-name-label" data-i18n="candidateName">Your name</span><span class="required-mark" aria-hidden="true">*</span><input id="candidate-name" type="text" maxlength="80" autocomplete="name" dir="auto" required aria-describedby="candidate-name-help candidate-name-error" data-i18n-placeholder="candidateNamePlaceholder" placeholder="Enter the name you would like to use"></label>
+      <p id="candidate-name-help" class="hint-text" data-i18n="candidateNameHelp">Used only during this interview in this browser.</p>
+      <p id="candidate-name-error" class="field-error" role="alert" hidden data-i18n="candidateNameRequired">Enter your name before starting the interview.</p>
+    </section>
 
     <section class="language-panel" data-i18n-aria-label="languagePreferences" aria-label="Language preferences">
       <p class="panel-kicker" data-i18n="preferences">Preferences</p>
@@ -55,7 +65,7 @@
   <section id="view-interview" class="view interview-view" hidden aria-labelledby="interview-title">
     <h1 id="interview-title" class="sr-only" data-view-focus tabindex="-1" data-i18n="interviewInProgress">Interview in progress</h1>
     <div class="interview-toolbar">
-      <div><p id="stage-label" class="eyebrow">Introduction</p><p id="question-progress" class="question-progress">Question 1 of 6</p></div>
+      <div><p id="stage-label" class="eyebrow">Introduction</p><p id="question-progress" class="question-progress">Question 1 of 6</p><p id="session-candidate" class="session-candidate" hidden dir="auto"></p></div>
       <div class="toolbar-actions">
         <label class="mini-select"><span data-i18n="translationLanguage">Translation language</span><select id="interview-translation-language-select"></select></label>
         <label class="toggle-row"><input id="subtitle-toggle" type="checkbox" checked><span data-i18n="subtitles">Translated subtitles</span></label>
@@ -115,7 +125,7 @@
 
   <section id="view-report" class="view" hidden aria-labelledby="report-title">
     <div class="report-heading"><div><p class="eyebrow" data-i18n="trainingReport">Training Report</p><h1 id="report-title" data-view-focus tabindex="-1" data-i18n="trainingReport">Training Report</h1></div><label class="toggle-row report-translation-toggle"><input id="report-global-translation-toggle" type="checkbox"><span data-i18n="showTranslation">Show translation</span></label></div>
-    <p id="report-mode-note" class="report-mode-note"></p><p id="report-example-banner" class="report-example-banner" hidden data-i18n="exampleReportBanner">This is an example report so you can preview the feature — play a real interview to get your own.</p>
+    <p id="report-candidate-name" class="report-candidate-name" hidden dir="auto"></p><p id="report-mode-note" class="report-mode-note"></p><p id="report-example-banner" class="report-example-banner" hidden data-i18n="exampleReportBanner">This is an example report so you can preview the feature — play a real interview to get your own.</p>
     <div class="report-top"><div class="score-ring" id="report-score-ring" style="--pct:0"><div class="score-ring-inner"><span id="report-score-value" class="score-value">0</span><span class="score-label" data-i18n="outOf100">/ 100</span></div></div><div class="report-top-side"><p id="report-xp-gained" class="report-xp-gained">+0 XP</p><p id="report-level-banner" class="report-level-banner" hidden></p><div id="report-achievements" class="report-achievements" hidden></div><dl class="report-highlights"><div><dt data-i18n="strongestSkill">Strongest skill</dt><dd id="report-strongest-skill"></dd></div><div><dt data-i18n="biggestImprovement">Biggest improvement</dt><dd id="report-biggest-improvement"></dd></div></dl></div></div>
     <div id="report-summary" class="report-summary"></div>
     <div class="report-columns"><div class="report-col"><h2 data-i18n="strengths">Strengths</h2><ul id="report-strengths" class="report-list report-list-good"></ul></div><div class="report-col"><h2 data-i18n="areasToPractice">Areas to practice</h2><ul id="report-weaknesses" class="report-list report-list-bad"></ul></div></div>

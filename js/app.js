@@ -33,6 +33,7 @@
     IQ.ui.renderHUD(gameState);
     buildLanguageSelectors();
     renderInterface();
+    renderThemeToggle();
     wireStaticButtons();
     renderPlayerSummary();
     aiAvailableCached = await IQ.ai.checkStatus();
@@ -41,7 +42,7 @@
 
   function cacheDom() {
     const ids = [
-      "player-summary", "ai-status-note", "interface-language-select", "translation-language-select", "interview-language-select", "interview-language-note",
+      "theme-toggle", "player-summary", "candidate-name", "candidate-name-error", "session-candidate", "report-candidate-name", "ai-status-note", "interface-language-select", "translation-language-select", "interview-language-select", "interview-language-note",
       "btn-start-interview", "btn-load-example", "demo-speed-toggle", "interview-translation-language-select", "subtitle-toggle", "btn-end-interview",
       "interviewer-character", "character-sarah", "character-david", "interviewer-name", "interviewer-role-label", "interviewer-status", "stage-label", "question-progress", "progress-dots",
       "question-text", "question-translation", "question-translation-text", "prep-timer", "hint-panel", "hint-text", "hint-translation", "quick-tip-panel", "quick-tip-text",
@@ -86,6 +87,7 @@
     document.querySelectorAll("[data-i18n-aria-label]").forEach((node) => { node.setAttribute("aria-label", t(node.dataset.i18nAriaLabel)); });
     document.querySelectorAll("[data-i18n-title]").forEach((node) => { node.title = t(node.dataset.i18nTitle); });
     document.querySelectorAll("[data-i18n-placeholder]").forEach((node) => { node.placeholder = t(node.dataset.i18nPlaceholder); });
+    renderThemeToggle();
     buildSetupOptionGrids();
     const preferences = IQ.i18n.preferences;
     [el.interfaceLanguageSelect, el.translationLanguageSelect, el.interviewTranslationLanguageSelect].forEach((select) => { if (select) select.value = preferences[select === el.interfaceLanguageSelect ? "interfaceLanguage" : "translationLanguage"]; });
@@ -98,6 +100,7 @@
       session.interviewerName = interviewerDisplayName(session.interviewer);
       el.interviewerName.textContent = session.interviewerName;
       el.interviewerRoleLabel.textContent = interviewerRoleLabel();
+      renderSessionCandidate();
       renderCurrentTurn();
       if (state.phase === IQ.interviewState.PHASES.REVIEWING && session.pendingPracticeEntry) {
         renderPracticeFeedback(session.pendingPracticeEntry);
@@ -107,7 +110,37 @@
     if (reportModel) renderReport(reportModel.report, reportModel.meta);
   }
 
+  function renderThemeToggle() {
+    if (!el.themeToggle || !IQ.theme) return;
+    const isDark = IQ.theme.value === "dark";
+    const nextAction = t(isDark ? "themeSwitchToLight" : "themeSwitchToDark");
+    el.themeToggle.innerHTML = IQ.ui.icon(isDark ? "sun" : "moon");
+    el.themeToggle.setAttribute("aria-pressed", String(isDark));
+    el.themeToggle.setAttribute("aria-label", nextAction);
+    el.themeToggle.title = nextAction;
+  }
+
+  function setCandidateNameError(message) {
+    const hasError = Boolean(message);
+    el.candidateName.setAttribute("aria-invalid", String(hasError));
+    el.candidateNameError.hidden = !hasError;
+    el.candidateNameError.textContent = message || "";
+  }
+
+  function renderSessionCandidate() {
+    const candidateName = session && session.candidateName ? session.candidateName : "";
+    el.sessionCandidate.hidden = !candidateName;
+    el.sessionCandidate.textContent = candidateName ? t("practicingAs", { name: candidateName }) : "";
+  }
+
   function wireStaticButtons() {
+    el.themeToggle.addEventListener("click", () => {
+      IQ.theme.toggle();
+      renderThemeToggle();
+    });
+    el.candidateName.addEventListener("input", () => {
+      if (el.candidateName.value.trim()) setCandidateNameError("");
+    });
     el.interfaceLanguageSelect.addEventListener("change", () => { IQ.i18n.setInterfaceLanguage(el.interfaceLanguageSelect.value); renderInterface(); });
     [el.translationLanguageSelect, el.interviewTranslationLanguageSelect].forEach((select) => select.addEventListener("change", () => {
       IQ.i18n.setTranslationLanguage(select.value);
@@ -188,11 +221,12 @@
     });
   }
 
-  function newSession() {
+  function newSession(candidateName) {
     const plan = IQ.questions.getPlan(choices.role, choices.difficulty, choices.demoSpeed);
     const interviewer = INTERVIEWERS[choices.interviewer] || INTERVIEWERS.sarah;
     return {
       id: ++operationId,
+      candidateName,
       roleId: choices.role,
       roleLabel: roleLabelFor(choices.role),
       difficultyId: choices.difficulty,
@@ -226,12 +260,20 @@
   }
 
   async function startInterview() {
+    const candidateName = el.candidateName.value.trim();
+    if (!candidateName) {
+      setCandidateNameError(t("candidateNameRequired"));
+      requestAnimationFrame(() => el.candidateName.focus());
+      return;
+    }
+    setCandidateNameError("");
     cancelActiveWork();
-    session = newSession();
+    session = newSession(candidateName);
     state.set(IQ.interviewState.PHASES.SETUP);
     IQ.ui.showView("view-interview");
     el.interviewerName.textContent = session.interviewerName;
     el.interviewerRoleLabel.textContent = interviewerRoleLabel();
+    renderSessionCandidate();
     el.characterSarah.hidden = session.interviewer.visualId !== "sarah";
     el.characterDavid.hidden = session.interviewer.visualId !== "david";
     el.subtitleToggle.checked = true;
@@ -815,7 +857,7 @@
       session.xpEarned += completionXP;
       IQ.ui.renderHUD(gameState);
     }
-    const meta = { xpGained: session.xpEarned, leveledUp: result.leveledUp, newLevel: result.newLevel, newAchievements: result.newAchievements, isExample: false, transcript: session.transcript, roleLabel: session.roleLabel, difficulty: session.difficultyId, mode: session.mode, usingAI: session.usingAI, isPartial };
+    const meta = { xpGained: session.xpEarned, leveledUp: result.leveledUp, newLevel: result.newLevel, newAchievements: result.newAchievements, isExample: false, candidateName: session.candidateName, transcript: session.transcript, roleLabel: session.roleLabel, difficulty: session.difficultyId, mode: session.mode, usingAI: session.usingAI, isPartial };
     reportModel = { report, meta };
     state.set(IQ.interviewState.PHASES.REPORT);
     renderReport(report, meta);
@@ -851,6 +893,9 @@
     const translation = (report.translations || {})[locale] || {};
     const showTranslation = el.reportGlobalTranslationToggle.checked && locale !== "en";
     const roleLabel = meta.isExample ? meta.roleLabel : roleLabelFor(session ? session.roleId : choices.role);
+    const candidateName = meta.isExample ? "" : (meta.candidateName || "");
+    el.reportCandidateName.hidden = !candidateName;
+    el.reportCandidateName.textContent = candidateName ? t("trainingReportFor", { name: candidateName }) : "";
     const difficulty = labelForDifficulty(meta.difficulty);
     el.reportModeNote.textContent = t("reportModeNote", { role: roleLabel, difficulty, mode: meta.mode === "real" ? t("realMode") : t("practiceMode"), status: meta.isPartial ? t("partialReport") : t("completed") });
     el.reportExampleBanner.hidden = !meta.isExample;
@@ -961,6 +1006,11 @@
   function backToSetup() {
     interruptTurn();
     session = null;
+    reportModel = null;
+    el.candidateName.value = "";
+    setCandidateNameError("");
+    el.sessionCandidate.hidden = true;
+    el.sessionCandidate.textContent = "";
     state.set(IQ.interviewState.PHASES.SETUP);
     renderPlayerSummary();
     IQ.ui.showView("view-setup");
