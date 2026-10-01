@@ -84,8 +84,9 @@ window.IQ = window.IQ || {};
       btn.id = def.id;
       const disabled = count <= 0 || Boolean(opts.disabled);
       btn.disabled = disabled;
-      btn.title = count <= 0 ? "Earn more by completing interviews" : def.label;
-      btn.innerHTML = icon(def.iconName) + "<span>" + def.label + "</span><span class=\"powerup-count\">" + count + "</span>";
+      btn.title = count <= 0 ? "Earn more by completing interviews" : `${def.label}: ${count} available`;
+      btn.setAttribute("aria-label", `${def.label}: ${count} available${disabled ? ", unavailable" : ""}`);
+      btn.innerHTML = icon(def.iconName) + "<span>" + def.label + "</span><span class=\"powerup-count\" aria-hidden=\"true\">" + count + "</span>";
       btn.addEventListener("click", () => {
         if (disabled) {
           if (count <= 0) toast("Earn more " + def.label + " by completing interviews.");
@@ -102,6 +103,7 @@ window.IQ = window.IQ || {};
     replayBtn.id = "pu-replay";
     replayBtn.disabled = Boolean(opts.disabled);
     replayBtn.title = "Replay question";
+    replayBtn.setAttribute("aria-label", replayBtn.disabled ? "Replay question, unavailable" : "Replay question");
     replayBtn.innerHTML = icon("replay") + "<span>Replay question</span>";
     replayBtn.addEventListener("click", () => { if (!replayBtn.disabled) onUse("replay"); });
     bar.appendChild(replayBtn);

@@ -141,8 +141,10 @@
       const button = document.createElement("button");
       button.type = "button";
       button.className = "option-btn";
-      button.setAttribute("aria-pressed", String(choices[choiceKey] === item.value));
+      const selected = choices[choiceKey] === item.value;
+      button.setAttribute("aria-pressed", String(selected));
       button.textContent = item.label;
+      if (selected) button.setAttribute("aria-label", `${item.label}, selected`);
       if (item.sub) { const sub = document.createElement("span"); sub.className = "option-sub"; sub.textContent = item.sub; button.appendChild(sub); }
       button.addEventListener("click", () => { choices[choiceKey] = item.value; buildSetupOptionGrids(); });
       container.appendChild(button);
@@ -256,7 +258,10 @@
     el.progressDots.innerHTML = "";
     for (let index = 0; index < totalMain; index += 1) {
       const dot = document.createElement("span");
-      dot.className = index < session.mainIndex ? "is-done" : index === session.mainIndex ? "is-current" : "";
+      const isCurrent = index === session.mainIndex;
+      dot.className = index < session.mainIndex ? "is-done" : isCurrent ? "is-current" : "";
+      if (isCurrent) dot.setAttribute("aria-current", "step");
+      dot.setAttribute("aria-label", `Question ${index + 1}${index < session.mainIndex ? ", completed" : isCurrent ? ", current" : ""}`);
       el.progressDots.appendChild(dot);
     }
     el.questionText.textContent = question.text.en;

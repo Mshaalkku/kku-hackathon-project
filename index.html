@@ -11,8 +11,8 @@
 <div id="toast-region" class="toast-region" aria-live="polite"></div>
 
 <header class="topbar">
-  <div class="brand">
-    <span class="brand-mark" aria-hidden="true">IQ</span>
+  <div class="brand" aria-label="Interview Quest">
+    <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 38" focusable="false"><path d="M8 2h16l-3 10-5 4-5-4z"/><path d="m11 17 5 4 5-4 3 16-8 3-8-3z"/></svg></span>
     <span class="brand-name">Interview Quest</span>
   </div>
   <div id="hud" class="hud" hidden>
@@ -23,27 +23,33 @@
 </header>
 
 <main id="app">
-  <section id="view-setup" class="view" aria-labelledby="setup-title">
-    <p class="eyebrow">Voice-first career practice</p>
-    <h1 id="setup-title" data-i18n="appTagline">Practice a real job interview, out loud.</h1>
-    <p class="subtitle"><span data-i18n="setupDescription">Speak your answers, hear Sarah or David respond, and get coached on English and answer structure.</span> <strong data-i18n="learningOnly">For learning only — not a real hiring assessment.</strong></p>
-    <p id="player-summary" class="player-summary" hidden></p>
-
-    <div class="language-grid" aria-label="Language preferences">
-      <label class="field-label"><span data-i18n="interfaceLanguage">Interface language</span><select id="interface-language-select"></select></label>
-      <label class="field-label"><span data-i18n="translationLanguage">Translation language</span><select id="translation-language-select"></select></label>
-      <label class="field-label"><span data-i18n="interviewLanguage">Interview language</span><select id="interview-language-select"></select></label>
+  <section id="view-setup" class="view setup-view" aria-labelledby="setup-title">
+    <div class="setup-brief">
+      <div>
+        <p class="eyebrow">Voice-first career practice</p>
+        <h1 id="setup-title" data-i18n="appTagline">Practice a real job interview, out loud.</h1>
+        <p class="subtitle"><span data-i18n="setupDescription">Speak your answers, hear Sarah or David respond, and get coached on English and answer structure.</span> <strong data-i18n="learningOnly">For learning only — not a real hiring assessment.</strong></p>
+        <p id="player-summary" class="player-summary" hidden></p>
+      </div>
+      <aside class="setup-assurance" aria-label="Practice approach"><span class="assurance-rule" aria-hidden="true"></span><p>Private, browser-based practice</p><span>Prepared for your next conversation</span></aside>
     </div>
-    <p id="interview-language-note" class="hint-text"></p>
 
-    <div class="setup-group"><h2 data-i18n="jobField">Job field</h2><div id="role-grid" class="option-grid" role="group" aria-label="Choose job field"></div></div>
-    <div class="setup-group"><h2 data-i18n="difficulty">Difficulty</h2><div id="difficulty-grid" class="option-grid option-grid-row" role="group" aria-label="Choose difficulty"></div></div>
-    <div class="setup-group"><h2 data-i18n="interviewer">Interviewer</h2><div id="gender-grid" class="option-grid option-grid-row interviewer-options" role="group" aria-label="Choose interviewer"></div></div>
-    <div class="setup-group"><h2 data-i18n="interviewStyle">Interviewer style</h2><div id="personality-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interviewer personality"></div></div>
-    <div class="setup-group"><h2 data-i18n="mode">Mode</h2><div id="mode-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interview mode"></div><p class="hint-text" data-i18n="modeExplanation">Practice gives concise feedback between answers. Real Interview Mode keeps coaching for the final report.</p></div>
-    <div class="setup-group setup-row"><label class="checkbox-row"><input type="checkbox" id="demo-speed-toggle"><span data-i18n="demoSpeed">Demo speed</span><span data-i18n="demoSpeedDetail"> — fewer questions and short timers</span></label></div>
-    <p id="ai-status-note" class="ai-status-note">Checking for live AI interviewer…</p>
-    <div class="setup-actions"><button id="btn-start-interview" class="btn btn-primary btn-lg" type="button" data-i18n="startInterview">Start Interview</button><button id="btn-load-example" class="btn btn-ghost" type="button" data-i18n="loadExample">Preview an example report</button></div>
+    <section class="language-panel" aria-label="Language preferences">
+      <p class="panel-kicker">Preferences</p>
+      <div class="language-grid">
+        <label class="field-label"><span data-i18n="interfaceLanguage">Interface language</span><select id="interface-language-select"></select></label>
+        <label class="field-label"><span data-i18n="translationLanguage">Translation language</span><select id="translation-language-select"></select></label>
+        <label class="field-label"><span data-i18n="interviewLanguage">Interview language</span><select id="interview-language-select"></select></label>
+      </div>
+      <p id="interview-language-note" class="hint-text"></p>
+    </section>
+
+    <div class="setup-selections">
+      <div class="setup-group"><h2 data-i18n="jobField">Job field</h2><div id="role-grid" class="option-grid" role="group" aria-label="Choose job field"></div></div>
+      <div class="selection-pair"><div class="setup-group"><h2 data-i18n="difficulty">Difficulty</h2><div id="difficulty-grid" class="option-grid option-grid-row" role="group" aria-label="Choose difficulty"></div></div><div class="setup-group"><h2 data-i18n="interviewer">Interviewer</h2><div id="gender-grid" class="option-grid option-grid-row interviewer-options" role="group" aria-label="Choose interviewer"></div></div></div>
+      <div class="selection-pair"><div class="setup-group"><h2 data-i18n="interviewStyle">Interviewer style</h2><div id="personality-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interviewer personality"></div></div><div class="setup-group"><h2 data-i18n="mode">Mode</h2><div id="mode-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interview mode"></div><p class="hint-text" data-i18n="modeExplanation">Practice gives concise feedback between answers. Real Interview Mode keeps coaching for the final report.</p></div></div>
+    </div>
+    <div class="setup-launch"><div class="setup-group setup-row"><label class="checkbox-row"><input type="checkbox" id="demo-speed-toggle"><span data-i18n="demoSpeed">Demo speed</span><span data-i18n="demoSpeedDetail"> — fewer questions and short timers</span></label></div><p id="ai-status-note" class="ai-status-note">Checking for live AI interviewer…</p><div class="setup-actions"><button id="btn-start-interview" class="btn btn-primary btn-lg" type="button" data-i18n="startInterview">Start Interview</button><button id="btn-load-example" class="btn btn-ghost" type="button" data-i18n="loadExample">Preview an example report</button></div></div>
   </section>
 
   <section id="view-interview" class="view interview-view" hidden aria-labelledby="interview-title">
@@ -60,13 +66,15 @@
 
     <div class="interview-room">
       <section id="office-scene" class="office-scene" aria-label="Professional interview room">
+        <div class="office-glow" aria-hidden="true"></div>
         <div class="office-window" aria-hidden="true"><span></span><span></span><span></span></div>
+        <div class="office-shelf" aria-hidden="true"><i></i><i></i><b></b></div>
         <div class="office-plant" aria-hidden="true"><i></i><i></i><i></i><b></b></div>
         <div class="office-frame" aria-hidden="true"></div>
-        <div class="desk" aria-hidden="true"><span class="desk-laptop"></span><span class="desk-notes"></span></div>
+        <div class="desk" aria-hidden="true"><span class="desk-laptop"></span><span class="desk-notes"></span><span class="desk-pen"></span></div>
         <div id="interviewer-character" class="interviewer-character is-waiting" aria-hidden="true">
-          <svg id="character-sarah" class="character-svg character-sarah-svg" viewBox="0 0 260 320" focusable="false"><path class="chair" d="M34 266h192v54H34z"/><path class="body blazer-sarah" d="M62 301c8-65 30-106 68-112 38 6 60 47 68 112z"/><path class="sarah-lapel" d="m91 205 39 45 39-45-11 70H102z"/><path class="neck" d="M112 177h36v37h-36z"/><path class="skin sarah-skin" d="M84 133c0-42 18-68 46-68s46 26 46 68v22c0 39-21 62-46 62s-46-23-46-62z"/><path class="hair-sarah" d="M77 145c-10-73 31-100 71-91 40 9 52 51 33 112l-11-11v-37c-19 14-55 16-76-4v57l-17-9z"/><path class="hair-sarah-side" d="M80 151c-10 38 0 84 25 91l3-63zm98-8c14 27 10 76-13 98l-4-68z"/><path class="brow" d="M101 139h19m20 0h19"/><circle class="eye" cx="111" cy="150" r="4"/><circle class="eye" cx="149" cy="150" r="4"/><path class="mouth sarah-mouth" d="M117 178c8 8 19 8 27 0"/><path class="sarah-blouse" d="m109 210 21 24 21-24-4 50h-34z"/><path class="sarah-badge" d="M73 244h26v17H73z"/></svg>
-          <svg id="character-david" class="character-svg character-david-svg" viewBox="0 0 260 320" focusable="false" hidden><path class="chair" d="M28 263h204v57H28z"/><path class="body blazer-david" d="M48 302c8-58 35-99 82-107 47 8 74 49 82 107z"/><path class="david-lapel" d="m80 207 50 55 50-55-10 70H90z"/><path class="neck david-neck" d="M108 175h44v42h-44z"/><path class="skin david-skin" d="M78 132c0-44 23-69 52-69s52 25 52 69v24c0 35-23 59-52 59s-52-24-52-59z"/><path class="hair-david" d="M77 131c5-53 32-78 72-76 26 1 42 17 48 43-25-12-75-18-120 13z"/><path class="david-sideburn" d="M82 115v50l12 7v-53zm84-4v60l13-9v-50z"/><path class="david-brow" d="M96 139h23m23 0h23"/><circle class="eye" cx="108" cy="151" r="4"/><circle class="eye" cx="152" cy="151" r="4"/><path class="nose" d="m130 150-5 22h10"/><path class="mouth david-mouth" d="M116 179c9 5 19 5 28 0"/><path class="david-shirt" d="m105 211 25 25 25-25-4 49h-42z"/><path class="tie" d="m123 211h14l-3 17-4 35-4-35z"/><path class="david-pocket" d="M164 245h24v13h-24z"/></svg>
+          <svg id="character-sarah" class="character-svg character-sarah-svg" viewBox="0 0 260 320" focusable="false"><path class="chair" d="M31 267h198v53H31z"/><path class="body blazer-sarah" d="M52 303c8-61 31-100 78-108 47 8 70 47 78 108z"/><path class="sarah-lapel" d="m83 205 47 54 47-54-12 75H95z"/><path class="neck" d="M111 178h38v39h-38z"/><path class="skin sarah-skin" d="M82 128c0-43 20-69 48-69s48 26 48 69v28c0 37-21 63-48 63s-48-26-48-63z"/><path class="hair-sarah" d="M74 147C67 78 99 43 137 49c42 6 58 43 44 107l-13-13v-31c-21 15-54 18-76 2v65l-18-12z"/><path class="hair-sarah-side" d="M79 146c-12 31-6 83 21 101l7-70zm99-10c16 31 8 88-18 109l-3-73z"/><path class="brow" d="M100 140h20m20 0h20"/><circle class="eye" cx="110" cy="151" r="4"/><circle class="eye" cx="150" cy="151" r="4"/><path class="nose" d="m130 150-5 21h10"/><path class="mouth sarah-mouth" d="M116 180c9 8 20 8 29 0"/><path class="sarah-blouse" d="m106 212 24 30 24-30-5 54h-38z"/><path class="sarah-badge" d="M71 247h29v17H71z"/></svg>
+          <svg id="character-david" class="character-svg character-david-svg" viewBox="0 0 260 320" focusable="false" hidden><path class="chair" d="M25 266h210v54H25z"/><path class="body blazer-david" d="M43 303c9-57 37-98 87-107 50 9 78 50 87 107z"/><path class="david-lapel" d="m75 207 55 60 55-60-13 75H88z"/><path class="neck david-neck" d="M107 176h46v42h-46z"/><path class="skin david-skin" d="M76 129c0-43 24-70 54-70s54 27 54 70v27c0 36-23 62-54 62s-54-26-54-62z"/><path class="hair-david" d="M75 132c2-50 29-79 71-79 34 0 53 21 54 55-25-16-83-23-125 9z"/><path class="david-sideburn" d="M80 112v57l13 9v-60zm88-3v63l13-10v-55z"/><path class="david-brow" d="M95 140h24m22 0h24"/><circle class="eye" cx="108" cy="152" r="4"/><circle class="eye" cx="153" cy="152" r="4"/><path class="nose" d="m131 151-5 23h10"/><path class="mouth david-mouth" d="M115 181c10 6 21 6 30 0"/><path class="david-shirt" d="m103 212 27 29 27-29-5 56h-44z"/><path class="tie" d="m123 212h15l-3 16 3 39-8 12-8-12 3-39z"/><path class="david-pocket" d="M168 249h24v13h-24z"/></svg>
         </div>
         <div class="identity-card"><strong id="interviewer-name">Sarah</strong><span id="interviewer-role-label">Career Interviewer</span><span id="interviewer-status" class="interviewer-status" aria-live="polite">Getting ready…</span></div>
       </section>
@@ -99,6 +107,7 @@
             <button id="btn-repeat-question" class="btn btn-text" type="button" data-i18n="repeatQuestion">Repeat Question</button>
           </div>
         </div>
+        <div class="practice-tools-heading"><span>Practice tools</span><span>Optional support for this answer</span></div>
         <div id="powerup-bar" class="powerup-bar" role="group" aria-label="Power-ups"></div>
       </section>
     </div>
