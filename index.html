@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Interview Quest — AI Voice Interview Trainer</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div id="toast-region" class="toast-region" aria-live="polite"></div>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">IQ</span>
+    <span class="brand-name">Interview Quest</span>
+  </div>
+  <div id="hud" class="hud" hidden>
+    <div class="hud-item hud-level" title="Level">
+      <span class="hud-icon" id="hud-level-icon" aria-hidden="true"></span>
+      <span id="hud-level">Lv.1</span>
+    </div>
+    <div class="hud-item hud-xp" title="XP progress">
+      <div class="xp-bar"><div id="hud-xp-fill" class="xp-bar-fill" style="width:0%"></div></div>
+      <span id="hud-xp-text" class="hud-xp-text">0 XP</span>
+    </div>
+    <div class="hud-item hud-streak" title="Practice streak">
+      <span class="hud-icon" id="hud-streak-icon" aria-hidden="true"></span>
+      <span id="hud-streak">0</span>
+    </div>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- ===================== SETUP ===================== -->
+  <section id="view-setup" class="view" aria-labelledby="setup-title">
+    <h1 id="setup-title">Practice a real job interview, out loud.</h1>
+    <p class="subtitle">Speak your answers, hear the interviewer respond, and get coached on English and structure. <strong>For learning only — not a real hiring assessment.</strong></p>
+    <p id="player-summary" class="player-summary" hidden></p>
+
+    <div class="setup-group">
+      <h2>Job field</h2>
+      <div id="role-grid" class="option-grid" role="group" aria-label="Choose job field"></div>
+    </div>
+
+    <div class="setup-group">
+      <h2>Difficulty</h2>
+      <div id="difficulty-grid" class="option-grid option-grid-row" role="group" aria-label="Choose difficulty"></div>
+    </div>
+
+    <div class="setup-group">
+      <h2>Interviewer</h2>
+      <div id="gender-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interviewer voice"></div>
+    </div>
+
+    <div class="setup-group">
+      <h2>Interviewer style</h2>
+      <div id="personality-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interviewer personality"></div>
+    </div>
+
+    <div class="setup-group">
+      <h2>Mode</h2>
+      <div id="mode-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interview mode"></div>
+      <p class="hint-text">Practice Mode gives you tips as you go. Real Interview Mode saves all feedback for the end — more realistic.</p>
+    </div>
+
+    <div class="setup-group setup-row">
+      <label class="checkbox-row">
+        <input type="checkbox" id="demo-speed-toggle">
+        <span>Demo speed (fewer questions, shorter timers — see every feature in under a minute)</span>
+      </label>
+    </div>
+
+    <p id="ai-status-note" class="ai-status-note">Checking for live AI interviewer…</p>
+
+    <div class="setup-actions">
+      <button id="btn-start-interview" class="btn btn-primary btn-lg" type="button">Start Interview</button>
+      <button id="btn-load-example" class="btn btn-ghost" type="button">Preview an example report</button>
+    </div>
+  </section>
+
+  <!-- ===================== INTERVIEW ===================== -->
+  <section id="view-interview" class="view" hidden aria-labelledby="interview-title">
+    <div class="interview-top">
+      <div class="interviewer-card">
+        <div id="interviewer-avatar" class="avatar">
+          <span class="avatar-initial" id="interviewer-initial">?</span>
+          <span class="speak-bars" aria-hidden="true"><i></i><i></i><i></i></span>
+        </div>
+        <div class="interviewer-meta">
+          <div id="interviewer-name" class="interviewer-name">Interviewer</div>
+          <div id="interviewer-role-label" class="interviewer-role">Role</div>
+          <div id="interviewer-status" class="interviewer-status" aria-live="polite">Getting ready…</div>
+        </div>
+      </div>
+      <div class="progress-block">
+        <div id="question-progress" class="question-progress">Question 1</div>
+        <div id="progress-dots" class="progress-dots" aria-hidden="true"></div>
+      </div>
+    </div>
+
+    <h1 id="interview-title" class="sr-only">Interview in progress</h1>
+
+    <div class="question-card">
+      <p id="question-text" class="question-text">Loading your first question…</p>
+      <p id="prep-timer" class="prep-timer" hidden></p>
+    </div>
+
+    <div id="hint-panel" class="hint-panel" hidden>
+      <strong>Hint</strong>
+      <p id="hint-text"></p>
+    </div>
+
+    <div id="quick-tip-panel" class="quick-tip-panel" hidden>
+      <strong>Quick tip</strong>
+      <p id="quick-tip-text"></p>
+    </div>
+
+    <div class="answer-area">
+      <div id="live-transcript" class="live-transcript" aria-live="polite"></div>
+      <label class="sr-only" for="answer-input">Your answer</label>
+      <textarea id="answer-input" rows="3" placeholder="Your answer appears here as you speak — or just type it."></textarea>
+
+      <div class="answer-controls">
+        <button id="btn-mic" class="mic-btn" type="button" aria-label="Start answering with your microphone">
+          <span class="mic-icon" aria-hidden="true"></span>
+        </button>
+        <div class="answer-controls-right">
+          <span id="mic-status-label" class="mic-status-label">Tap the mic, or type below</span>
+          <div class="answer-buttons">
+            <button id="btn-send-answer" class="btn btn-primary" type="button">Send answer</button>
+            <button id="btn-skip-question" class="btn btn-text" type="button">Skip question</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="powerup-bar" class="powerup-bar" role="group" aria-label="Power-ups"></div>
+  </section>
+
+  <!-- ===================== REPORT ===================== -->
+  <section id="view-report" class="view" hidden aria-labelledby="report-title">
+    <h1 id="report-title">Training Report</h1>
+    <p id="report-mode-note" class="report-mode-note"></p>
+    <p id="report-example-banner" class="report-example-banner" hidden>This is an example report so you can preview the feature — play a real interview to get your own.</p>
+
+    <div class="report-top">
+      <div class="score-ring" id="report-score-ring" style="--pct:0">
+        <div class="score-ring-inner">
+          <span id="report-score-value" class="score-value">0</span>
+          <span class="score-label">/ 100</span>
+        </div>
+      </div>
+      <div class="report-top-side">
+        <p id="report-xp-gained" class="report-xp-gained">+0 XP</p>
+        <p id="report-level-banner" class="report-level-banner" hidden></p>
+        <div id="report-achievements" class="report-achievements" hidden></div>
+      </div>
+    </div>
+
+    <div class="report-columns">
+      <div class="report-col">
+        <h2>Strengths</h2>
+        <ul id="report-strengths" class="report-list report-list-good"></ul>
+      </div>
+      <div class="report-col">
+        <h2>Areas to practice</h2>
+        <ul id="report-weaknesses" class="report-list report-list-bad"></ul>
+      </div>
+    </div>
+
+    <div class="report-section">
+      <h2>English & communication feedback</h2>
+      <p id="report-english-feedback"></p>
+    </div>
+
+    <div class="report-section">
+      <h2>Question by question</h2>
+      <div id="report-per-question" class="report-per-question"></div>
+    </div>
+
+    <div class="report-section">
+      <h2>Suggested next steps</h2>
+      <ul id="report-next-steps" class="report-list"></ul>
+    </div>
+
+    <div class="setup-actions">
+      <button id="btn-play-again" class="btn btn-primary btn-lg" type="button">Practice again</button>
+      <button id="btn-back-setup" class="btn btn-ghost" type="button">Back to menu</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer-note">Interview Quest is a practice tool. Scores and feedback are for learning only, not a real hiring decision.</footer>
+
+<script src="sample-data/data.js"></script>
+<script src="js/questions.js"></script>
+<script src="js/speech.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/feedback.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
