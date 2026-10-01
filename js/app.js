@@ -582,7 +582,9 @@
     const translatedStrength = feedback.strength[translationLocale];
     const translatedImprovement = feedback.improvement[translationLocale];
     el.feedbackStrength.textContent = sourceStrength;
+    el.feedbackStrength.dir = "ltr";
     el.feedbackImprovement.textContent = sourceImprovement;
+    el.feedbackImprovement.dir = "ltr";
     const showStrengthTranslation = translationLocale !== "en" && translatedStrength && translatedStrength !== sourceStrength;
     const showImprovementTranslation = translationLocale !== "en" && translatedImprovement && translatedImprovement !== sourceImprovement;
     el.feedbackStrengthTranslation.hidden = !showStrengthTranslation;
@@ -606,13 +608,16 @@
     const translation = feedback.tip[translationLocale];
     const sourceTip = feedback.tip.en;
     el.feedbackTipText.textContent = sourceTip;
+    el.feedbackTipText.dir = "ltr";
     const showTranslation = translationLocale !== "en" && translation && translation !== sourceTip;
     el.feedbackTipTranslation.hidden = !showTranslation;
     el.feedbackTipTranslation.textContent = showTranslation ? `${t("translation")}: ${translation}` : "";
     el.feedbackTipTranslation.dir = IQ.i18n.getLanguage(translationLocale).dir;
     requestAnimationFrame(() => {
-      try { document.getElementById("practice-feedback-title").focus({ preventScroll: true }); }
-      catch (error) { document.getElementById("practice-feedback-title").focus(); }
+      const title = document.getElementById("practice-feedback-title");
+      title.scrollIntoView({ behavior: "smooth", block: "start" });
+      try { title.focus({ preventScroll: true }); }
+      catch (error) { title.focus(); }
     });
   }
 
@@ -870,6 +875,7 @@
     (values || []).forEach((value, index) => {
       const item = document.createElement("li");
       item.textContent = value;
+      item.dir = "ltr";
       if (showTranslation && translationValues && translationValues[index] && translationValues[index] !== value) item.appendChild(translationNode(translationValues[index]));
       container.appendChild(item);
     });
@@ -905,9 +911,11 @@
     el.reportScoreValue.textContent = score;
     el.reportXpGained.textContent = t("xpGained", { xp: meta.xpGained });
     el.reportStrongestSkill.textContent = report.strongestSkill || (report.strengths || [""])[0];
+    el.reportStrongestSkill.dir = "ltr";
     el.reportBiggestImprovement.textContent = report.biggestImprovement || (report.weaknesses || [""])[0];
+    el.reportBiggestImprovement.dir = "ltr";
     el.reportSummary.innerHTML = "";
-    const summary = document.createElement("p"); summary.textContent = report.summary || ""; el.reportSummary.appendChild(summary);
+    const summary = document.createElement("p"); summary.textContent = report.summary || ""; summary.dir = "ltr"; el.reportSummary.appendChild(summary);
     if (showTranslation && translation.summary && translation.summary !== summary.textContent) el.reportSummary.appendChild(translationNode(translation.summary));
     if (meta.leveledUp) { el.reportLevelBanner.hidden = false; el.reportLevelBanner.textContent = t("levelUp", { level: meta.newLevel }); } else el.reportLevelBanner.hidden = true;
     el.reportAchievements.hidden = !(meta.newAchievements && meta.newAchievements.length);
@@ -917,7 +925,7 @@
     createList(el.reportWeaknesses, report.weaknesses, translation.weaknesses, showTranslation);
     renderReportMetrics(report.metrics || [], locale, showTranslation);
     el.reportEnglishFeedback.innerHTML = "";
-    const feedback = document.createElement("span"); feedback.textContent = report.englishFeedback || ""; el.reportEnglishFeedback.appendChild(feedback);
+    const feedback = document.createElement("span"); feedback.textContent = report.englishFeedback || ""; feedback.dir = "ltr"; el.reportEnglishFeedback.appendChild(feedback);
     if (showTranslation && translation.englishFeedback && translation.englishFeedback !== feedback.textContent) el.reportEnglishFeedback.appendChild(translationNode(translation.englishFeedback));
     renderPerQuestion(report, meta, locale, showTranslation);
     createList(el.reportNextSteps, report.nextSteps, translation.nextSteps, showTranslation);

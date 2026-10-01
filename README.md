@@ -48,7 +48,7 @@ Use **Preview an example report** to see invented demo content immediately.
 
 Before presenting the app, use **Demo speed** to complete setup → interview → feedback → report in about a minute. Check the same path with typing only, keyboard navigation, and an unavailable microphone.
 
-- Check 320px, 360px, 375px, 390px, 412px, 430px, tablet, and desktop widths, plus narrow and large-phone landscape viewports: controls must fit with no horizontal scrolling or clipping.
+- Review the compact phone journey at 360×800, 375×812, 390×844, 412×915, and 430×932, plus tablet, desktop, and phone landscape. Check more than overflow: the header/HUD must remain fully visible, setup cards must be touch-friendly, Sarah or David must stay visible with each question, and answer/feedback/report controls must remain easy to reach.
 - Check both light and dark themes on setup, interview, feedback, the End Interview dialog, and the report. Reload after switching each theme to confirm the browser-local preference persists without changing game progress or language preferences.
 - Switch the interface through Arabic (RTL), German, and Hindi: localized chrome, the candidate field, selected cards, interview identity panel, dialog, and report must wrap cleanly; English interview prompts must remain LTR.
 - Verify blank and whitespace-only names are blocked with a focused inline error. Complete a real report and confirm the candidate name is shown only for that active session, never on the example report.
