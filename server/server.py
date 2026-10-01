@@ -28,6 +28,7 @@ ALLOWED_ROLES = {
     "general", "software-engineering", "information-systems", "cybersecurity",
     "ai-machine-learning", "data-analysis", "it-support", "product-management",
     "project-management", "marketing", "finance-accounting", "human-resources", "sales",
+    "ux-ui-design", "business-analysis", "customer-service",
 }
 PERSONALITY = {
     "friendly": "warm and encouraging",
@@ -67,6 +68,21 @@ def localized_text(value):
     for locale, text in value.items():
         if locale in ALLOWED_LOCALES and isinstance(text, str) and len(text.strip()) <= 500:
             result[locale] = text.strip()
+    return result
+
+
+def memory_summary(value):
+    if not isinstance(value, dict):
+        return None
+    allowed_keys = {"coveredStages", "technologies", "gaps", "priorFollowUpKinds"}
+    if set(value) - allowed_keys:
+        return None
+    result = {}
+    for key in allowed_keys:
+        items = value.get(key, [])
+        if not isinstance(items, list) or len(items) > 8 or any(not isinstance(item, str) or len(item.strip()) > 60 for item in items):
+            return None
+        result[key] = [item.strip() for item in items if item.strip()]
     return result
 
 
@@ -187,8 +203,10 @@ def follow_up_prompt(payload):
     return (
         "You are a professional English mock-interviewer. This is educational practice, not a hiring decision. "
         "Decide whether one brief, content-specific follow-up will add value after the candidate's answer. "
-        "Never score or judge the candidate. Do not ask a general filler question. "
+        "Never score or judge the candidate. Do not ask a general filler question or repeat an already-covered topic. "
         f"Your tone is {personality}. The interview stage is {payload['stage']}. "
+        f"A bounded session-only evidence summary is available: {json.dumps(payload['candidateMemory'], ensure_ascii=False)}. "
+        "Use it only to avoid repetition or clarify a missing action, result, specificity, or role detail. "
         "Return ONLY compact valid JSON in this exact shape: "
         '{"action":"advance"} OR {"action":"follow_up","questionEn":"one spoken English question",'
         '"questionTranslation":{"LOCALE":"translation"}}. '
@@ -278,10 +296,11 @@ class Handler(http.server.SimpleHTTPRequestHandler):
             "answer": as_text(data.get("answer"), MAX_ANSWER_CHARS),
             "personality": data.get("personality"),
             "translationLanguage": data.get("translationLanguage"),
+            "candidateMemory": memory_summary(data.get("candidateMemory")),
         }
         if (
             payload["roleId"] not in ALLOWED_ROLES or stage not in ALLOWED_STAGES or stage == "closing"
-            or not payload["questionId"] or not payload["questionEn"] or not payload["answer"]
+            or not payload["questionId"] or not payload["questionEn"] or not payload["answer"] or payload["candidateMemory"] is None
             or payload["personality"] not in PERSONALITY or payload["translationLanguage"] not in ALLOWED_LOCALES
         ):
             self._send_json(400, {"ok": False, "error": "bad_request"})

@@ -79,10 +79,41 @@ window.IQ = window.IQ || {};
       local("a sensitive people or communication challenge", "تحدياً حساساً متعلقاً بالأشخاص أو التواصل", "un reto delicado de personas o comunicación", "un défi sensible lié aux personnes ou à la communication", "eine sensible Personal- oder Kommunikationsherausforderung", "लोगों या संचार से जुड़ी एक संवेदनशील चुनौती"),
       local("how you helped create a fair and positive experience", "كيف ساعدت في خلق تجربة عادلة وإيجابية", "cómo ayudaste a crear una experiencia justa y positiva", "comment vous avez contribué à créer une expérience juste et positive", "wie du zu einer fairen und positiven Erfahrung beigetragen hast", "आपने निष्पक्ष और सकारात्मक अनुभव बनाने में कैसे मदद की")],
     ["sales", local("Sales", "المبيعات", "Ventas", "Ventes", "Vertrieb", "बिक्री"),
-      local("a customer conversation, pitch, or relationship you developed", "محادثة عميل أو عرضاً أو علاقة طورتها", "una conversación con cliente, presentación o relación que desarrollaste", "une conversation client, une présentation ou une relation que vous avez développée", "ein Kundengespräch, einen Pitch oder eine Beziehung, die du aufgebaut hast", "एक ग्राहक बातचीत, प्रस्तुति या संबंध जिसे आपने विकसित किया"),
+      local("a customer conversation, pitch, or relationship you developed", "محادثة عميل أو عرضاً أو علاقة طورتها", "una conversación con cliente, presentación o relación que desarrollaste", "une conversation client, une présentation ou une relation que vous avez contribué à développer", "ein Kundengespräch, einen Pitch oder eine Beziehung, die du aufgebaut hast", "एक ग्राहक बातचीत, प्रस्तुति या संबंध जिसे आपने विकसित किया"),
       local("an objection, rejection, or changing customer need", "اعتراضاً أو رفضاً أو حاجة عميل متغيرة", "una objeción, rechazo o necesidad cambiante del cliente", "une objection, un refus ou un besoin client changeant", "einen Einwand, eine Ablehnung oder ein sich änderndes Kundenbedürfnis", "एक आपत्ति, अस्वीकृति या बदलती ग्राहक आवश्यकता"),
       local("how you built trust and moved toward a result", "كيف بنيت الثقة وتقدمت نحو نتيجة", "cómo generaste confianza y avanzaste hacia un resultado", "comment vous avez instauré la confiance et progressé vers un résultat", "wie du Vertrauen aufgebaut und auf ein Ergebnis hingearbeitet hast", "आपने विश्वास कैसे बनाया और परिणाम की ओर कैसे बढ़े")],
+    ["ux-ui-design", local("UX/UI Design", "تصميم تجربة وواجهة المستخدم", "Diseño UX/UI", "Conception UX/UI", "UX/UI-Design", "यूएक्स/यूआई डिज़ाइन"),
+      local("a user-centered design, prototype, or usability project", "مشروع تصميم يركز على المستخدم أو نموذجاً أولياً أو اختبار قابلية استخدام", "un proyecto de diseño centrado en el usuario, prototipo o usabilidad", "un projet de conception centrée sur l'utilisateur, prototype ou ergonomie", "ein nutzerzentriertes Design-, Prototyp- oder Usability-Projekt", "उपयोगकर्ता-केंद्रित डिज़ाइन, प्रोटोटाइप या उपयोगिता प्रोजेक्ट"),
+      local("a research, accessibility, or design trade-off", "تحدياً في البحث أو إمكانية الوصول أو مفاضلة تصميم", "un reto de investigación, accesibilidad o una decisión de diseño", "un défi de recherche, d'accessibilité ou un compromis de conception", "eine Forschungs-, Barrierefreiheits- oder Designabwägung", "अनुसंधान, पहुंच या डिज़ाइन समझौते की चुनौती"),
+      local("how your design improved a user's experience", "كيف حسّن تصميمك تجربة المستخدم", "cómo tu diseño mejoró la experiencia de una persona usuaria", "comment votre conception a amélioré l'expérience d'un utilisateur", "wie dein Design die Nutzererfahrung verbessert hat", "आपके डिज़ाइन ने उपयोगकर्ता अनुभव को कैसे बेहतर बनाया")],
+    ["business-analysis", local("Business Analysis", "تحليل الأعمال", "Análisis de negocio", "Analyse métier", "Business-Analyse", "व्यवसाय विश्लेषण"),
+      local("a requirement, process, or stakeholder problem you clarified", "متطلباً أو عملية أو مشكلة أصحاب مصلحة قمت بتوضيحها", "un requisito, proceso o problema de partes interesadas que aclaraste", "une exigence, un processus ou un problème de parties prenantes que vous avez clarifié", "eine Anforderung, einen Prozess oder ein Stakeholder-Problem, das du geklärt hast", "एक आवश्यकता, प्रक्रिया या हितधारक समस्या जिसे आपने स्पष्ट किया"),
+      local("an ambiguous requirement or competing stakeholder need", "متطلباً غامضاً أو احتياجات متنافسة لأصحاب المصلحة", "un requisito ambiguo o necesidades contrapuestas de partes interesadas", "une exigence ambiguë ou des besoins concurrents de parties prenantes", "eine unklare Anforderung oder konkurrierende Stakeholder-Bedürfnisse", "अस्पष्ट आवश्यकता या प्रतिस्पर्धी हितधारक जरूरत"),
+      local("how your analysis improved a decision or delivery outcome", "كيف حسّن تحليلك قراراً أو نتيجة تسليم", "cómo tu análisis mejoró una decisión o resultado de entrega", "comment votre analyse a amélioré une décision ou un résultat de livraison", "wie deine Analyse eine Entscheidung oder ein Lieferergebnis verbesserte", "आपके विश्लेषण ने निर्णय या डिलीवरी परिणाम कैसे बेहतर किया")],
+    ["customer-service", local("Customer Service", "خدمة العملاء", "Atención al cliente", "Service client", "Kundenservice", "ग्राहक सेवा"),
+      local("a customer issue you owned from first contact to resolution", "مشكلة عميل توليتها من أول تواصل حتى الحل", "un caso de cliente del que te hiciste cargo desde el primer contacto hasta la resolución", "un problème client dont vous avez assuré le suivi du premier contact à la résolution", "ein Kundenanliegen, das du vom ersten Kontakt bis zur Lösung betreut hast", "एक ग्राहक समस्या जिसका आपने पहले संपर्क से समाधान तक जिम्मा लिया"),
+      local("a difficult or frustrated customer situation", "موقف عميل صعب أو محبط", "una situación con un cliente difícil o frustrado", "une situation avec un client difficile ou frustré", "eine schwierige oder frustrierte Kundensituation", "कठिन या निराश ग्राहक स्थिति"),
+      local("how you restored trust or improved the customer's outcome", "كيف استعدت الثقة أو حسّنت نتيجة العميل", "cómo recuperaste la confianza o mejoraste el resultado del cliente", "comment vous avez rétabli la confiance ou amélioré le résultat pour le client", "wie du Vertrauen wiederhergestellt oder das Ergebnis für den Kunden verbessert hast", "आपने भरोसा कैसे बहाल किया या ग्राहक का परिणाम कैसे बेहतर किया")],
   ];
+
+  const ROLE_FOCUS = {
+    general: local("your most relevant strengths", "نقاط قوتك الأكثر صلة", "tus fortalezas más relevantes", "vos atouts les plus pertinents", "deine wichtigsten relevanten Stärken", "आपकी सबसे प्रासंगिक ताकतें"),
+    "software-engineering": local("software design, testing, and delivery", "تصميم البرمجيات والاختبار والتسليم", "diseño, pruebas y entrega de software", "conception, tests et livraison de logiciels", "Softwaredesign, Tests und Lieferung", "सॉफ्टवेयर डिज़ाइन, टेस्टिंग और डिलीवरी"),
+    "information-systems": local("systems thinking, data quality, and stakeholder communication", "تفكير الأنظمة وجودة البيانات والتواصل مع أصحاب المصلحة", "pensamiento sistémico, calidad de datos y comunicación", "vision systèmes, qualité des données et communication", "Systemdenken, Datenqualität und Stakeholder-Kommunikation", "सिस्टम सोच, डेटा गुणवत्ता और हितधारक संचार"),
+    cybersecurity: local("risk awareness, secure decision-making, and clear communication", "الوعي بالمخاطر والقرارات الآمنة والتواصل الواضح", "conciencia de riesgos, decisiones seguras y comunicación clara", "conscience des risques, décisions sûres et communication claire", "Risikobewusstsein, sichere Entscheidungen und klare Kommunikation", "जोखिम जागरूकता, सुरक्षित निर्णय और स्पष्ट संचार"),
+    "ai-machine-learning": local("data quality, evaluation, and responsible AI", "جودة البيانات والتقييم والذكاء الاصطناعي المسؤول", "calidad de datos, evaluación e IA responsable", "qualité des données, évaluation et IA responsable", "Datenqualität, Bewertung und verantwortungsvolle KI", "डेटा गुणवत्ता, मूल्यांकन और जिम्मेदार एआई"),
+    "data-analysis": local("analysis, data storytelling, and decision support", "التحليل وسرد البيانات ودعم القرار", "análisis, narrativa de datos y apoyo a decisiones", "analyse, narration des données et aide à la décision", "Analyse, Datenkommunikation und Entscheidungsunterstützung", "विश्लेषण, डेटा स्टोरीटेलिंग और निर्णय सहायता"),
+    "it-support": local("diagnosis, communication, and dependable follow-through", "التشخيص والتواصل والمتابعة الموثوقة", "diagnóstico, comunicación y seguimiento fiable", "diagnostic, communication et suivi fiable", "Diagnose, Kommunikation und zuverlässige Nachverfolgung", "निदान, संचार और भरोसेमंद फॉलो-थ्रू"),
+    "product-management": local("customer discovery, prioritization, and measurable product outcomes", "فهم العملاء وتحديد الأولويات ونتائج المنتج القابلة للقياس", "descubrimiento de clientes, priorización y resultados medibles", "découverte client, priorisation et résultats produit mesurables", "Kundenverständnis, Priorisierung und messbare Produktergebnisse", "ग्राहक खोज, प्राथमिकता और मापने योग्य उत्पाद परिणाम"),
+    "project-management": local("planning, alignment, risk management, and delivery", "التخطيط والمواءمة وإدارة المخاطر والتسليم", "planificación, alineación, gestión de riesgos y entrega", "planification, alignement, gestion des risques et livraison", "Planung, Abstimmung, Risikomanagement und Lieferung", "योजना, समन्वय, जोखिम प्रबंधन और डिलीवरी"),
+    marketing: local("audience insight, message testing, and campaign measurement", "فهم الجمهور واختبار الرسائل وقياس الحملات", "conocimiento de audiencia, pruebas de mensajes y medición", "connaissance de l'audience, test des messages et mesure", "Zielgruppenverständnis, Nachrichtentests und Kampagnenmessung", "दर्शक अंतर्दृष्टि, संदेश परीक्षण और अभियान मापन"),
+    "finance-accounting": local("accuracy, controls, and clear financial insight", "الدقة والضوابط والرؤية المالية الواضحة", "precisión, controles e información financiera clara", "exactitude, contrôles et analyse financière claire", "Genauigkeit, Kontrollen und klare Finanzinformationen", "सटीकता, नियंत्रण और स्पष्ट वित्तीय अंतर्दृष्टि"),
+    "human-resources": local("fairness, confidential communication, and people support", "الإنصاف والتواصل السري ودعم الأشخاص", "equidad, comunicación confidencial y apoyo a personas", "équité, communication confidentielle et soutien aux personnes", "Fairness, vertrauliche Kommunikation und Unterstützung von Menschen", "निष्पक्षता, गोपनीय संचार और लोगों का समर्थन"),
+    sales: local("discovery, trust-building, and consultative problem solving", "فهم الاحتياجات وبناء الثقة وحل المشكلات الاستشاري", "descubrimiento, confianza y resolución consultiva", "découverte, confiance et résolution consultative", "Bedarfsermittlung, Vertrauensaufbau und beratende Problemlösung", "खोज, भरोसा निर्माण और परामर्शात्मक समस्या समाधान"),
+    "ux-ui-design": local("user research, prototyping, accessibility, and design critique", "بحث المستخدم والنماذج الأولية وإمكانية الوصول ونقد التصميم", "investigación de usuarios, prototipos, accesibilidad y crítica", "recherche utilisateur, prototypage, accessibilité et critique", "Nutzerforschung, Prototyping, Barrierefreiheit und Designkritik", "उपयोगकर्ता अनुसंधान, प्रोटोटाइपिंग, पहुंच और डिज़ाइन आलोचना"),
+    "business-analysis": local("requirements discovery, process analysis, and stakeholder alignment", "اكتشاف المتطلبات وتحليل العمليات ومواءمة أصحاب المصلحة", "descubrimiento de requisitos, análisis de procesos y alineación", "découverte des exigences, analyse des processus et alignement", "Anforderungserhebung, Prozessanalyse und Stakeholder-Abstimmung", "आवश्यकता खोज, प्रक्रिया विश्लेषण और हितधारक संरेखण"),
+    "customer-service": local("empathy, case ownership, de-escalation, and resolution", "التعاطف وملكية الحالة وتهدئة التصعيد والحل", "empatía, responsabilidad del caso, desescalada y resolución", "empathie, prise en charge, désescalade et résolution", "Empathie, Fallverantwortung, Deeskalation und Lösung", "सहानुभूति, केस ओनरशिप, तनाव कम करना और समाधान"),
+  };
 
   const ROLES = CAREER_SEEDS.map(([id, label]) => ({ id, label: label.en, labelText: label }));
 
@@ -104,12 +135,12 @@ window.IQ = window.IQ || {};
       "मुझे {background} के बारे में बताइए। आपका योगदान क्या था?"
     ),
     role: local(
-      "What skills or habits help you do well in {role}, and how have you developed them?",
-      "ما المهارات أو العادات التي تساعدك على النجاح في {role}، وكيف طورتها؟",
-      "¿Qué habilidades o hábitos te ayudan a rendir bien en {role} y cómo los has desarrollado?",
-      "Quelles compétences ou habitudes vous aident à réussir dans {role}, et comment les avez-vous développées ?",
-      "Welche Fähigkeiten oder Gewohnheiten helfen dir in {role}, und wie hast du sie entwickelt?",
-      "कौन-से कौशल या आदतें आपको {role} में अच्छा काम करने में मदद करती हैं, और आपने उन्हें कैसे विकसित किया?"
+      "For this role, how have you developed {focus}? Please ground your answer in one example.",
+      "لهذا الدور، كيف طورت {focus}؟ يرجى ربط إجابتك بمثال واحد.",
+      "Para este puesto, ¿cómo has desarrollado {focus}? Relaciona tu respuesta con un ejemplo.",
+      "Pour ce poste, comment avez-vous développé {focus} ? Ancrez votre réponse dans un exemple.",
+      "Wie hast du für diese Rolle {focus} entwickelt? Begründe deine Antwort mit einem Beispiel.",
+      "इस भूमिका के लिए आपने {focus} कैसे विकसित किया है? अपने उत्तर को एक उदाहरण से जोड़ें।"
     ),
     behavioral: local(
       "Tell me about a time you worked with someone who had a different viewpoint. How did you move the work forward?",
@@ -164,14 +195,55 @@ window.IQ = window.IQ || {};
     closing: local("Ask a genuine question about expectations, the team, or how success is measured.", "اطرح سؤالاً حقيقياً عن التوقعات أو الفريق أو كيفية قياس النجاح.", "Haz una pregunta genuina sobre expectativas, el equipo o cómo se mide el éxito.", "Posez une vraie question sur les attentes, l'équipe ou la manière de mesurer la réussite.", "Stelle eine echte Frage zu Erwartungen, Team oder Erfolgsmessung.", "अपेक्षाओं, टीम या सफलता मापने के तरीके के बारे में सच्चा प्रश्न पूछें।"),
   };
 
-  const FOLLOW_UP = local(
-    "Could you make that more specific? What did you personally do, and what was the result?",
-    "هل يمكنك جعل ذلك أكثر تحديداً؟ ماذا فعلت أنت شخصياً وما كانت النتيجة؟",
-    "¿Podrías hacerlo más específico? ¿Qué hiciste tú personalmente y cuál fue el resultado?",
-    "Pouvez-vous être plus précis ? Qu'avez-vous fait personnellement et quel a été le résultat ?",
-    "Kannst du das konkreter machen? Was hast du persönlich getan und was war das Ergebnis?",
-    "क्या आप इसे अधिक विशिष्ट बना सकते हैं? आपने व्यक्तिगत रूप से क्या किया और परिणाम क्या रहा?"
-  );
+  const FOLLOW_UPS = {
+    specificity: local(
+      "Could you make that more specific with one concrete example?",
+      "هل يمكنك جعل ذلك أكثر تحديداً بمثال ملموس واحد؟",
+      "¿Podrías hacerlo más específico con un ejemplo concreto?",
+      "Pouvez-vous être plus précis avec un exemple concret ?",
+      "Kannst du das mit einem konkreten Beispiel genauer machen?",
+      "क्या आप इसे एक ठोस उदाहरण के साथ अधिक विशिष्ट बना सकते हैं?"
+    ),
+    action: local(
+      "What was your specific responsibility, and what did you personally do next?",
+      "ما كانت مسؤوليتك المحددة، وماذا فعلت أنت شخصياً بعد ذلك؟",
+      "¿Cuál fue tu responsabilidad específica y qué hiciste después personalmente?",
+      "Quelle était votre responsabilité précise et qu'avez-vous fait personnellement ensuite ?",
+      "Was war deine konkrete Verantwortung, und was hast du danach persönlich getan?",
+      "आपकी विशिष्ट जिम्मेदारी क्या थी और आपने आगे व्यक्तिगत रूप से क्या किया?"
+    ),
+    result: local(
+      "What changed as a result, and how did you know the outcome was useful?",
+      "ما الذي تغير نتيجة لذلك، وكيف عرفت أن النتيجة كانت مفيدة؟",
+      "¿Qué cambió como resultado y cómo supiste que fue útil?",
+      "Qu'est-ce qui a changé ensuite, et comment saviez-vous que le résultat était utile ?",
+      "Was hat sich dadurch verändert, und woran hast du erkannt, dass das Ergebnis nützlich war?",
+      "नतीजे के तौर पर क्या बदला, और आपको कैसे पता चला कि परिणाम उपयोगी था?"
+    ),
+    metric: local(
+      "How did you measure the impact for the team, user, customer, or project?",
+      "كيف قست الأثر على الفريق أو المستخدم أو العميل أو المشروع؟",
+      "¿Cómo mediste el impacto para el equipo, usuario, cliente o proyecto?",
+      "Comment avez-vous mesuré l'impact pour l'équipe, l'utilisateur, le client ou le projet ?",
+      "Wie hast du die Wirkung für Team, Nutzer, Kunde oder Projekt gemessen?",
+      "आपने टीम, उपयोगकर्ता, ग्राहक या प्रोजेक्ट के लिए प्रभाव को कैसे मापा?"
+    ),
+  };
+
+  const REACTIONS = {
+    friendly: {
+      followUp: local("Thanks for explaining that. I'd like to understand one detail a little better.", "شكراً لشرحك ذلك. أود فهم تفصيل واحد بصورة أفضل.", "Gracias por explicarlo. Me gustaría entender mejor un detalle.", "Merci de l'avoir expliqué. J'aimerais mieux comprendre un détail.", "Danke für die Erklärung. Ich würde gern ein Detail besser verstehen.", "इसे समझाने के लिए धन्यवाद। मैं एक विवरण को थोड़ा बेहतर समझना चाहूँगा।"),
+      transition: local("That's helpful. Let's move to another part of your experience.", "هذا مفيد. لننتقل إلى جزء آخر من خبرتك.", "Es útil. Pasemos a otra parte de tu experiencia.", "C'est utile. Passons à une autre partie de votre expérience.", "Das ist hilfreich. Gehen wir zu einem anderen Teil deiner Erfahrung über.", "यह उपयोगी है। आइए आपके अनुभव के दूसरे हिस्से पर चलते हैं।"),
+    },
+    professional: {
+      followUp: local("Thank you. I have one focused follow-up.", "شكراً. لدي سؤال متابعة محدد واحد.", "Gracias. Tengo una pregunta de seguimiento concreta.", "Merci. J'ai une question de suivi ciblée.", "Danke. Ich habe eine gezielte Rückfrage.", "धन्यवाद। मेरे पास एक केंद्रित अनुवर्ती प्रश्न है।"),
+      transition: local("Thank you. Let's move to the next topic.", "شكراً. لننتقل إلى الموضوع التالي.", "Gracias. Pasemos al siguiente tema.", "Merci. Passons au sujet suivant.", "Danke. Gehen wir zum nächsten Thema über.", "धन्यवाद। आइए अगले विषय पर चलते हैं।"),
+    },
+    strict: {
+      followUp: local("I need one precise clarification.", "أحتاج إلى توضيح دقيق واحد.", "Necesito una aclaración precisa.", "J'ai besoin d'une précision.", "Ich brauche eine präzise Klarstellung.", "मुझे एक सटीक स्पष्टीकरण चाहिए।"),
+      transition: local("Understood. Next topic.", "مفهوم. الموضوع التالي.", "Entendido. Siguiente tema.", "Compris. Sujet suivant.", "Verstanden. Nächstes Thema.", "समझ गया। अगला विषय।"),
+    },
+  };
 
   function format(template, values, locale) {
     let text = template[locale] || template.en;
@@ -183,7 +255,7 @@ window.IQ = window.IQ || {};
 
   function buildQuestion(seed, stage, index) {
     const [roleId, role, background, challenge, impact] = seed;
-    const variables = { role, background, challenge, impact };
+    const variables = { role, background, challenge, impact, focus: ROLE_FOCUS[roleId] || ROLE_FOCUS.general };
     const text = {};
     LOCALES.forEach((locale) => { text[locale] = format(QUESTION_TEMPLATES[stage], variables, locale); });
     return {
@@ -222,18 +294,29 @@ window.IQ = window.IQ || {};
     return indexes.map((index) => ({ ...questions[index], text: { ...questions[index].text }, hint: { ...questions[index].hint } }));
   }
 
-  function getFollowUp(parentQuestion) {
+  function getFollowUp(parentQuestion, kind) {
+    const followUpKind = FOLLOW_UPS[kind] ? kind : "specificity";
     return {
-      id: `${parentQuestion.id}-local-follow-up`,
+      id: `${parentQuestion.id}-local-${followUpKind}-follow-up`,
       parentId: parentQuestion.id,
       roleId: parentQuestion.roleId,
       stage: parentQuestion.stage,
-      text: { ...FOLLOW_UP },
+      text: { ...FOLLOW_UPS[followUpKind] },
       hint: { ...HINTS[parentQuestion.stage] },
+      followUpKind,
       followUpEligible: false,
       isFollowUp: true,
       isClosing: false,
     };
+  }
+
+  function getReaction(personality, kind) {
+    const tone = REACTIONS[personality] || REACTIONS.professional;
+    return { ...(tone[kind] || tone.transition) };
+  }
+
+  function getRoleFocus(roleId) {
+    return { ...(ROLE_FOCUS[roleId] || ROLE_FOCUS.general) };
   }
 
   function getQuestionSet(roleId, difficultyId) {
@@ -254,11 +337,13 @@ window.IQ = window.IQ || {};
     ROLES,
     DIFFICULTIES,
     CAREERS,
-    GENERIC_FOLLOW_UP: FOLLOW_UP.en,
+    ROLE_FOCUS,
     getCareer,
     getDifficulty,
     getPlan,
     getFollowUp,
+    getReaction,
+    getRoleFocus,
     getQuestionSet,
     getHint,
   };

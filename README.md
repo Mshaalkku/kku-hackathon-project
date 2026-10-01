@@ -7,10 +7,11 @@ A voice-first English job-interview practice simulator. Meet Sarah or David in a
 ## What works
 
 - **Reliable English interview practice:** a staged interview moves through introduction, background, role skills, collaboration, problem solving, impact, growth, and candidate questions/closing.
-- **13 career paths:** General / Any Job, Software Engineering, Information Systems, Cybersecurity, AI / Machine Learning, Data Analysis / Data Science, IT Support, Product Management, Project Management, Marketing, Finance / Accounting, Human Resources, and Sales.
-- **Sarah or David:** lightweight illustrated interviewer characters, professional office setting, personality choices, and browser voice when available.
+- **16 career paths:** General / Any Job, Software Engineering, Information Systems, Cybersecurity, AI / Machine Learning, Data Analysis / Data Science, IT Support, Product Management, Project Management, Marketing, Finance / Accounting, Human Resources, Sales, UX/UI Design, Business Analysis, and Customer Service.
+- **Sarah or David:** visibly distinct professional interviewer portraits, matching participant identity, personality choices, and browser voice preference when a suitable installed voice is available.
+- **Real conversation fallback:** deterministic stages never break, while local analysis can ask one targeted follow-up about missing ownership, detail, results, or measurement. Optional AI can add a bounded answer-specific follow-up using a small in-session evidence summary.
 - **Explicit voice controls:** Start Answer, Stop Answer, Finish Answer, Skip Question, Repeat Question, and End Interview. Typing is always available when microphone or speech recognition is unavailable.
-- **Practice / Real Interview modes:** Practice shows immediate coaching; Real mode saves feedback for the report.
+- **Practice / Real Interview modes:** Practice pauses after each answer with concise answer-derived feedback and Continue, Retry, and Hear Feedback actions. Real mode keeps detailed coaching for the final report and limits learning aids during the live interview.
 - **Career game layer:** XP, levels, streaks, achievements, Think Time, Hint, Second Chance, 2× XP, and question replay stay in browser `localStorage`.
 - **Demo speed:** a three-question path and short preparation timers let a reviewer see the full flow in about a minute.
 - **Partial reports:** End Interview safely creates a report from completed answers instead of losing progress.
@@ -38,7 +39,7 @@ The candidate's original spoken/transcribed or typed answer is always preserved 
 2. Choose a career, language preferences, interviewer, and **Demo speed** if you want a short run.
 3. Start the interview. Type answers or use browser microphone recognition when it is available.
 
-The fallback is complete: deterministic interview stages, office UI, scoring, local feedback, multilingual subtitles/translations, XP, power-ups, and a final report all work with no key, no server, and no network.
+The fallback is complete: deterministic interview stages, professional office UI, contextual local follow-ups, immediate Practice feedback, scoring, multilingual subtitles/translations, XP, power-ups, and a detailed final report all work with no key, no server, and no network.
 
 Use **Preview an example report** to see invented demo content immediately.
 

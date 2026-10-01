@@ -26,7 +26,7 @@
   <section id="view-setup" class="view" aria-labelledby="setup-title">
     <p class="eyebrow">Voice-first career practice</p>
     <h1 id="setup-title" data-i18n="appTagline">Practice a real job interview, out loud.</h1>
-    <p class="subtitle">Speak your answers, hear Sarah or David respond, and get coached on English and answer structure. <strong data-i18n="learningOnly">For learning only — not a real hiring assessment.</strong></p>
+    <p class="subtitle"><span data-i18n="setupDescription">Speak your answers, hear Sarah or David respond, and get coached on English and answer structure.</span> <strong data-i18n="learningOnly">For learning only — not a real hiring assessment.</strong></p>
     <p id="player-summary" class="player-summary" hidden></p>
 
     <div class="language-grid" aria-label="Language preferences">
@@ -38,10 +38,10 @@
 
     <div class="setup-group"><h2 data-i18n="jobField">Job field</h2><div id="role-grid" class="option-grid" role="group" aria-label="Choose job field"></div></div>
     <div class="setup-group"><h2 data-i18n="difficulty">Difficulty</h2><div id="difficulty-grid" class="option-grid option-grid-row" role="group" aria-label="Choose difficulty"></div></div>
-    <div class="setup-group"><h2 data-i18n="interviewer">Interviewer</h2><div id="gender-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interviewer"></div></div>
+    <div class="setup-group"><h2 data-i18n="interviewer">Interviewer</h2><div id="gender-grid" class="option-grid option-grid-row interviewer-options" role="group" aria-label="Choose interviewer"></div></div>
     <div class="setup-group"><h2 data-i18n="interviewStyle">Interviewer style</h2><div id="personality-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interviewer personality"></div></div>
-    <div class="setup-group"><h2 data-i18n="mode">Mode</h2><div id="mode-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interview mode"></div><p class="hint-text">Practice Mode gives you tips as you go. Real Interview Mode saves all feedback for the end.</p></div>
-    <div class="setup-group setup-row"><label class="checkbox-row"><input type="checkbox" id="demo-speed-toggle"><span data-i18n="demoSpeed">Demo speed</span><span> — fewer questions and short timers</span></label></div>
+    <div class="setup-group"><h2 data-i18n="mode">Mode</h2><div id="mode-grid" class="option-grid option-grid-row" role="group" aria-label="Choose interview mode"></div><p class="hint-text" data-i18n="modeExplanation">Practice gives concise feedback between answers. Real Interview Mode keeps coaching for the final report.</p></div>
+    <div class="setup-group setup-row"><label class="checkbox-row"><input type="checkbox" id="demo-speed-toggle"><span data-i18n="demoSpeed">Demo speed</span><span data-i18n="demoSpeedDetail"> — fewer questions and short timers</span></label></div>
     <p id="ai-status-note" class="ai-status-note">Checking for live AI interviewer…</p>
     <div class="setup-actions"><button id="btn-start-interview" class="btn btn-primary btn-lg" type="button" data-i18n="startInterview">Start Interview</button><button id="btn-load-example" class="btn btn-ghost" type="button" data-i18n="loadExample">Preview an example report</button></div>
   </section>
@@ -65,8 +65,8 @@
         <div class="office-frame" aria-hidden="true"></div>
         <div class="desk" aria-hidden="true"><span class="desk-laptop"></span><span class="desk-notes"></span></div>
         <div id="interviewer-character" class="interviewer-character is-waiting" aria-hidden="true">
-          <svg id="character-sarah" class="character-svg" viewBox="0 0 260 320" focusable="false"><path class="chair" d="M42 276h176v44H42z"/><path class="body blazer-sarah" d="M78 300c5-76 27-110 52-110s47 34 52 110z"/><path class="neck" d="M112 180h36v33h-36z"/><ellipse class="skin" cx="130" cy="142" rx="49" ry="58"/><path class="hair-sarah" d="M82 144c-8-74 94-104 100-13 8 32-5 87-21 99v-57c-18 16-48 20-78 4z"/><path class="hair-sarah" d="M86 166c-13 25-6 75 13 74l3-60zm88-2c13 28 10 70-8 76l-7-55z"/><circle class="eye" cx="112" cy="145" r="4"/><circle class="eye" cx="148" cy="145" r="4"/><path class="mouth" d="M118 171c8 7 17 7 25 0"/><path class="shirt" d="M110 206l20 22 20-22-2 52h-36z"/></svg>
-          <svg id="character-david" class="character-svg" viewBox="0 0 260 320" focusable="false" hidden><path class="chair" d="M42 276h176v44H42z"/><path class="body blazer-david" d="M78 300c5-76 27-110 52-110s47 34 52 110z"/><path class="neck" d="M112 180h36v33h-36z"/><ellipse class="skin david-skin" cx="130" cy="142" rx="49" ry="58"/><path class="hair-david" d="M83 136c3-70 91-70 95 2-16-21-69-24-95-2z"/><path class="ear" d="M80 145c-13 0-13 30 3 31m95-31c13 0 13 30-3 31"/><circle class="eye" cx="112" cy="146" r="4"/><circle class="eye" cx="148" cy="146" r="4"/><path class="mouth" d="M118 172c8 6 17 6 25 0"/><path class="shirt" d="M110 206l20 22 20-22-2 52h-36z"/><path class="tie" d="M124 208h12l-3 20-3 33-3-33z"/></svg>
+          <svg id="character-sarah" class="character-svg character-sarah-svg" viewBox="0 0 260 320" focusable="false"><path class="chair" d="M34 266h192v54H34z"/><path class="body blazer-sarah" d="M62 301c8-65 30-106 68-112 38 6 60 47 68 112z"/><path class="sarah-lapel" d="m91 205 39 45 39-45-11 70H102z"/><path class="neck" d="M112 177h36v37h-36z"/><path class="skin sarah-skin" d="M84 133c0-42 18-68 46-68s46 26 46 68v22c0 39-21 62-46 62s-46-23-46-62z"/><path class="hair-sarah" d="M77 145c-10-73 31-100 71-91 40 9 52 51 33 112l-11-11v-37c-19 14-55 16-76-4v57l-17-9z"/><path class="hair-sarah-side" d="M80 151c-10 38 0 84 25 91l3-63zm98-8c14 27 10 76-13 98l-4-68z"/><path class="brow" d="M101 139h19m20 0h19"/><circle class="eye" cx="111" cy="150" r="4"/><circle class="eye" cx="149" cy="150" r="4"/><path class="mouth sarah-mouth" d="M117 178c8 8 19 8 27 0"/><path class="sarah-blouse" d="m109 210 21 24 21-24-4 50h-34z"/><path class="sarah-badge" d="M73 244h26v17H73z"/></svg>
+          <svg id="character-david" class="character-svg character-david-svg" viewBox="0 0 260 320" focusable="false" hidden><path class="chair" d="M28 263h204v57H28z"/><path class="body blazer-david" d="M48 302c8-58 35-99 82-107 47 8 74 49 82 107z"/><path class="david-lapel" d="m80 207 50 55 50-55-10 70H90z"/><path class="neck david-neck" d="M108 175h44v42h-44z"/><path class="skin david-skin" d="M78 132c0-44 23-69 52-69s52 25 52 69v24c0 35-23 59-52 59s-52-24-52-59z"/><path class="hair-david" d="M77 131c5-53 32-78 72-76 26 1 42 17 48 43-25-12-75-18-120 13z"/><path class="david-sideburn" d="M82 115v50l12 7v-53zm84-4v60l13-9v-50z"/><path class="david-brow" d="M96 139h23m23 0h23"/><circle class="eye" cx="108" cy="151" r="4"/><circle class="eye" cx="152" cy="151" r="4"/><path class="nose" d="m130 150-5 22h10"/><path class="mouth david-mouth" d="M116 179c9 5 19 5 28 0"/><path class="david-shirt" d="m105 211 25 25 25-25-4 49h-42z"/><path class="tie" d="m123 211h14l-3 17-4 35-4-35z"/><path class="david-pocket" d="M164 245h24v13h-24z"/></svg>
         </div>
         <div class="identity-card"><strong id="interviewer-name">Sarah</strong><span id="interviewer-role-label">Career Interviewer</span><span id="interviewer-status" class="interviewer-status" aria-live="polite">Getting ready…</span></div>
       </section>
@@ -78,7 +78,14 @@
           <p id="prep-timer" class="prep-timer" hidden></p>
         </div>
         <div id="hint-panel" class="hint-panel" hidden><strong>Hint</strong><p id="hint-text"></p><div id="hint-translation" class="translation-block compact" hidden dir="auto"></div></div>
-        <div id="quick-tip-panel" class="quick-tip-panel" hidden><strong>Quick tip</strong><p id="quick-tip-text"></p></div>
+        <section id="practice-feedback-panel" class="practice-feedback-panel" hidden aria-live="polite" aria-labelledby="practice-feedback-title">
+          <div class="feedback-heading"><div><p class="eyebrow" data-i18n="practiceFeedback">Practice feedback</p><h2 id="practice-feedback-title" data-i18n="applyBeforeNext">Apply this before the next question</h2></div><span id="feedback-score" class="feedback-score">0 / 100</span></div>
+          <div class="feedback-grid"><article><h3 data-i18n="whatWentWell">What went well</h3><p id="feedback-strength"></p></article><article><h3 data-i18n="improveNext">Improve next</h3><p id="feedback-improvement"></p></article></div>
+          <div id="feedback-indicators" class="feedback-indicators"></div>
+          <div class="feedback-tip"><strong data-i18n="practicalTip">Practical tip</strong><p id="feedback-tip-text"></p><div id="feedback-tip-translation" class="translation-block compact" hidden dir="auto"></div></div>
+          <div class="feedback-actions" role="group" aria-label="Practice feedback actions"><button id="btn-continue-interview" class="btn btn-primary" type="button" data-i18n="continueInterview">Continue Interview</button><button id="btn-retry-answer" class="btn btn-secondary" type="button" data-i18n="retryAnswer">Improve / Retry Answer</button><button id="btn-hear-feedback" class="btn btn-text" type="button" data-i18n="hearFeedback">Hear feedback</button></div>
+        </section>
+        <div id="quick-tip-panel" class="quick-tip-panel" hidden><strong data-i18n="quickTip">Quick tip</strong><p id="quick-tip-text"></p></div>
         <div class="answer-area">
           <div id="live-transcript" class="live-transcript" aria-live="polite"></div>
           <label class="input-label" for="answer-input">Your answer <span class="input-label-note">(typing is always available)</span></label>
@@ -103,10 +110,11 @@
     <div class="report-top"><div class="score-ring" id="report-score-ring" style="--pct:0"><div class="score-ring-inner"><span id="report-score-value" class="score-value">0</span><span class="score-label">/ 100</span></div></div><div class="report-top-side"><p id="report-xp-gained" class="report-xp-gained">+0 XP</p><p id="report-level-banner" class="report-level-banner" hidden></p><div id="report-achievements" class="report-achievements" hidden></div><dl class="report-highlights"><div><dt>Strongest skill</dt><dd id="report-strongest-skill"></dd></div><div><dt>Biggest improvement</dt><dd id="report-biggest-improvement"></dd></div></dl></div></div>
     <div id="report-summary" class="report-summary"></div>
     <div class="report-columns"><div class="report-col"><h2 data-i18n="strengths">Strengths</h2><ul id="report-strengths" class="report-list report-list-good"></ul></div><div class="report-col"><h2 data-i18n="areasToPractice">Areas to practice</h2><ul id="report-weaknesses" class="report-list report-list-bad"></ul></div></div>
-    <div class="report-section"><h2>Communication & language feedback</h2><p id="report-english-feedback"></p></div>
+    <section class="report-section"><h2 data-i18n="interviewSignals">Interview practice signals</h2><p class="report-section-note" data-i18n="signalsNote">These transparent learning indicators reflect the structure of your responses, not hiring suitability.</p><div id="report-metrics" class="report-metrics"></div></section>
+    <div class="report-section"><h2 data-i18n="communicationFeedback">Communication & language feedback</h2><p id="report-english-feedback"></p></div>
     <div class="report-section"><h2 data-i18n="questionByQuestion">Question by question</h2><div id="report-per-question" class="report-per-question"></div></div>
     <div class="report-section"><h2 data-i18n="nextSteps">Suggested next steps</h2><ul id="report-next-steps" class="report-list"></ul></div>
-    <div class="setup-actions"><button id="btn-play-again" class="btn btn-primary btn-lg" type="button">Practice again</button><button id="btn-back-setup" class="btn btn-ghost" type="button">Back to menu</button></div>
+    <div class="setup-actions"><button id="btn-play-again" class="btn btn-primary btn-lg" type="button" data-i18n="practiceAgain">Practice again</button><button id="btn-back-setup" class="btn btn-ghost" type="button" data-i18n="backToMenu">Back to menu</button></div>
   </section>
 </main>
 <footer class="footer-note" data-i18n="learningOnly">Interview Quest is a practice tool. Scores and feedback are for learning only, not a real hiring decision.</footer>

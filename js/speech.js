@@ -26,13 +26,22 @@ window.IQ = window.IQ || {};
     window.speechSynthesis.onvoiceschanged = loadVoices;
   }
 
-  function pickVoice(genderPref) {
+  const profileVoiceUris = {};
+
+  function pickVoice(genderPref, interviewerId) {
     const voices = voicesCache.length ? voicesCache : loadVoices();
     const english = voices.filter((voice) => /^en/i.test(voice.lang));
     const pool = english.length ? english : voices;
     if (!pool.length) return null;
+    const profile = interviewerId || genderPref || "default";
+    const reserved = Object.keys(profileVoiceUris).filter((id) => id !== profile).map((id) => profileVoiceUris[id]);
     const hints = genderPref === "female" ? FEMALE_HINTS : MALE_HINTS;
-    return pool.find((voice) => hints.some((hint) => voice.name.toLowerCase().includes(hint))) || pool[0];
+    const preferred = pool.filter((voice) => hints.some((hint) => voice.name.toLowerCase().includes(hint)));
+    const unusedPreferred = preferred.find((voice) => !reserved.includes(voice.voiceURI));
+    const unusedFallback = pool.find((voice) => !reserved.includes(voice.voiceURI));
+    const voice = unusedPreferred || preferred[0] || unusedFallback || pool[0];
+    profileVoiceUris[profile] = voice.voiceURI;
+    return voice;
   }
 
   function speak(text, options) {
@@ -48,7 +57,7 @@ window.IQ = window.IQ || {};
       const tone = PERSONALITY_TONE[opts.personality] || PERSONALITY_TONE.professional;
       utterance.rate = tone.rate;
       utterance.pitch = tone.pitch;
-      const voice = pickVoice(opts.gender);
+      const voice = pickVoice(opts.gender, opts.interviewerId);
       if (voice) utterance.voice = voice;
       let settled = false;
       const watchdogMs = Math.max(9000, Math.min(45000, String(text).split(/\s+/).length * 600 + 4500));

@@ -12,6 +12,7 @@ window.IQ = window.IQ || {};
     RECORDING: "recording",
     STOPPING: "stopping",
     SUBMITTING: "submitting",
+    REVIEWING: "reviewing",
     CLOSING: "closing",
     REPORT: "report",
   });
@@ -34,7 +35,8 @@ window.IQ = window.IQ || {};
       fail: PHASES.READY,
     },
     [PHASES.STOPPING]: { stopped: PHASES.READY, submit: PHASES.SUBMITTING, fail: PHASES.READY, end: PHASES.CLOSING },
-    [PHASES.SUBMITTING]: { next: PHASES.PRESENTING, fail: PHASES.PRESENTING, end: PHASES.CLOSING },
+    [PHASES.SUBMITTING]: { review: PHASES.REVIEWING, next: PHASES.PRESENTING, fail: PHASES.PRESENTING, end: PHASES.CLOSING },
+    [PHASES.REVIEWING]: { continue: PHASES.PRESENTING, retry: PHASES.READY, repeat: PHASES.REVIEWING, end: PHASES.CLOSING },
     [PHASES.CLOSING]: { report: PHASES.REPORT, cancel: PHASES.READY },
     [PHASES.REPORT]: { restart: PHASES.SETUP },
   });
@@ -54,6 +56,9 @@ window.IQ = window.IQ || {};
       canFinishAnswer: phase === PHASES.READY || phase === PHASES.RECORDING || phase === PHASES.STOPPING,
       canSkip: phase === PHASES.READY,
       canRepeat: phase === PHASES.READY || phase === PHASES.RECORDING,
+      canContinue: phase === PHASES.REVIEWING,
+      canRetry: phase === PHASES.REVIEWING,
+      canHearFeedback: phase === PHASES.REVIEWING,
       canEnd: phase !== PHASES.SETUP && phase !== PHASES.REPORT && phase !== PHASES.CLOSING,
       isBusy: phase === PHASES.PRESENTING || phase === PHASES.STOPPING || phase === PHASES.SUBMITTING || phase === PHASES.CLOSING,
     };

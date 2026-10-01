@@ -15,8 +15,12 @@
   let reportModel = null;
   let el = {};
 
+  const INTERVIEWERS = {
+    sarah: { id: "sarah", name: "Sarah", visualId: "sarah", voicePreference: "female", title: "Career Interviewer" },
+    david: { id: "david", name: "David", visualId: "david", voicePreference: "male", title: "Career Interviewer" },
+  };
   const choices = {
-    role: "general", difficulty: "medium", gender: "female", personality: "friendly", mode: "practice", demoSpeed: false,
+    role: "general", difficulty: "medium", interviewer: "sarah", personality: "friendly", mode: "practice", demoSpeed: false,
   };
 
   document.addEventListener("DOMContentLoaded", init);
@@ -40,10 +44,11 @@
       "btn-start-interview", "btn-load-example", "demo-speed-toggle", "interview-translation-language-select", "subtitle-toggle", "btn-end-interview",
       "interviewer-character", "character-sarah", "character-david", "interviewer-name", "interviewer-role-label", "interviewer-status", "stage-label", "question-progress", "progress-dots",
       "question-text", "question-translation", "question-translation-text", "prep-timer", "hint-panel", "hint-text", "hint-translation", "quick-tip-panel", "quick-tip-text",
+      "practice-feedback-panel", "feedback-score", "feedback-strength", "feedback-improvement", "feedback-indicators", "feedback-tip-text", "feedback-tip-translation", "btn-continue-interview", "btn-retry-answer", "btn-hear-feedback",
       "live-transcript", "answer-input", "mic-status-label", "btn-start-answer", "btn-stop-answer", "btn-finish-answer", "btn-skip-question", "btn-repeat-question", "powerup-bar",
       "end-interview-dialog", "btn-cancel-end", "btn-confirm-end", "btn-play-again", "btn-back-setup", "report-global-translation-toggle",
       "report-mode-note", "report-example-banner", "report-score-ring", "report-score-value", "report-xp-gained", "report-level-banner", "report-achievements",
-      "report-strongest-skill", "report-biggest-improvement", "report-summary", "report-strengths", "report-weaknesses", "report-english-feedback", "report-per-question", "report-next-steps",
+      "report-strongest-skill", "report-biggest-improvement", "report-summary", "report-strengths", "report-weaknesses", "report-metrics", "report-english-feedback", "report-per-question", "report-next-steps",
     ];
     ids.forEach((id) => { el[toCamel(id)] = document.getElementById(id); });
   }
@@ -100,6 +105,9 @@
     el.btnFinishAnswer.addEventListener("click", finishAnswer);
     el.btnSkipQuestion.addEventListener("click", () => submitAnswer("", { skipped: true }));
     el.btnRepeatQuestion.addEventListener("click", () => presentCurrentQuestion({ preserveInput: true }));
+    el.btnContinueInterview.addEventListener("click", continueAfterFeedback);
+    el.btnRetryAnswer.addEventListener("click", retryPracticeAnswer);
+    el.btnHearFeedback.addEventListener("click", hearPracticeFeedback);
     el.btnEndInterview.addEventListener("click", showEndDialog);
     el.btnConfirmEnd.addEventListener("click", () => endInterviewEarly());
     el.btnCancelEnd.addEventListener("click", () => { if (el.endInterviewDialog.open) el.endInterviewDialog.close(); });
@@ -118,10 +126,10 @@
 
   function buildSetupOptionGrids() {
     renderGrid("role-grid", IQ.questions.ROLES.map((role) => ({ value: role.id, label: IQ.i18n.getText(role.labelText) })), "role");
-    renderGrid("difficulty-grid", IQ.questions.DIFFICULTIES.map((difficulty) => ({ value: difficulty.id, label: difficulty.label, sub: `${difficulty.questionCount} questions` })), "difficulty");
-    renderGrid("gender-grid", [{ value: "female", label: "Sarah", sub: "career interviewer" }, { value: "male", label: "David", sub: "career interviewer" }], "gender");
+    renderGrid("difficulty-grid", IQ.questions.DIFFICULTIES.map((difficulty) => ({ value: difficulty.id, label: difficulty.label, sub: `${difficulty.questionCount} ${t("questions")}` })), "difficulty");
+    renderGrid("gender-grid", [{ value: "sarah", label: "Sarah", sub: INTERVIEWERS.sarah.title }, { value: "david", label: "David", sub: INTERVIEWERS.david.title }], "interviewer");
     renderGrid("personality-grid", [{ value: "friendly", label: "Friendly" }, { value: "professional", label: "Professional" }, { value: "strict", label: "Strict" }], "personality");
-    renderGrid("mode-grid", [{ value: "practice", label: t("practiceMode"), sub: "Tips as you go" }, { value: "real", label: t("realMode"), sub: "Feedback at the end" }], "mode");
+    renderGrid("mode-grid", [{ value: "practice", label: t("practiceMode"), sub: t("practiceFeedback") }, { value: "real", label: t("realMode"), sub: t("communicationFeedback") }], "mode");
     el.demoSpeedToggle.checked = choices.demoSpeed;
   }
 
@@ -144,7 +152,7 @@
   function updateAIStatusNote() {
     el.aiStatusNote.textContent = aiAvailableCached
       ? "Live AI follow-ups are ready. The core interview plan remains reliable and on this device."
-      : "The built-in interview plan is ready. Add no key to use the complete offline fallback.";
+      : "The built-in interview plan is ready. No key is needed for the complete offline fallback.";
     el.aiStatusNote.className = `ai-status-note ${aiAvailableCached ? "is-live" : "is-fallback"}`;
   }
 
@@ -152,16 +160,17 @@
 
   function newSession() {
     const plan = IQ.questions.getPlan(choices.role, choices.difficulty, choices.demoSpeed);
+    const interviewer = INTERVIEWERS[choices.interviewer] || INTERVIEWERS.sarah;
     return {
       id: ++operationId,
       roleId: choices.role,
       roleLabel: roleLabelFor(choices.role),
       difficultyId: choices.difficulty,
-      gender: choices.gender,
+      interviewer,
       personality: choices.personality,
       mode: choices.mode,
       demoSpeed: choices.demoSpeed,
-      interviewerName: choices.gender === "male" ? "David" : "Sarah",
+      interviewerName: interviewer.name,
       usingAI: aiAvailableCached,
       plan,
       mainIndex: 0,
@@ -178,6 +187,9 @@
       prepTimer: null,
       prepRemaining: 0,
       pendingFinish: false,
+      pendingTurn: null,
+      pendingPracticeEntry: null,
+      conversationMemory: { answeredQuestionIds: [], followUpKinds: [], topics: [], technologies: [], missingEvidence: [], metrics: { answers: 0, words: 0, fillers: 0, starParts: { situation: 0, task: 0, action: 0, result: 0 } } },
       complete: false,
       reportCompleted: false,
     };
@@ -189,12 +201,13 @@
     state.set(IQ.interviewState.PHASES.SETUP);
     IQ.ui.showView("view-interview");
     el.interviewerName.textContent = session.interviewerName;
-    el.interviewerRoleLabel.textContent = `${session.roleLabel} · ${capitalize(session.difficultyId)}`;
-    el.characterSarah.hidden = session.gender !== "female";
-    el.characterDavid.hidden = session.gender !== "male";
+    el.interviewerRoleLabel.textContent = `${session.interviewer.title} · ${session.roleLabel} · ${capitalize(session.difficultyId)}`;
+    el.characterSarah.hidden = session.interviewer.visualId !== "sarah";
+    el.characterDavid.hidden = session.interviewer.visualId !== "david";
     el.subtitleToggle.checked = true;
     el.hintPanel.hidden = true;
     el.quickTipPanel.hidden = true;
+    el.practiceFeedbackPanel.hidden = true;
     renderPowerUps();
     await presentCurrentQuestion();
   }
@@ -204,32 +217,39 @@
   async function presentCurrentQuestion(options) {
     const opts = options || {};
     if (!session || !session.currentQuestion || session.complete) return;
+    const preservedHint = Boolean(opts.preserveInput && session.hintUsedForCurrent);
+    const preservedPrepRemaining = opts.preserveInput ? session.prepRemaining : 0;
     const token = ++operationId;
     session.id = token;
     cancelActiveWork({ keepSpeech: false });
     state.set(IQ.interviewState.PHASES.PRESENTING);
-    session.hintUsedForCurrent = false;
+    session.hintUsedForCurrent = preservedHint;
     clearPrepTimer();
     renderCurrentTurn({ preserveInput: opts.preserveInput });
+    if (preservedHint) showHint();
     updateControls();
     setInterviewerState("speaking", t("speaking"));
-    const result = await IQ.speech.speak(session.currentQuestion.text.en, {
-      gender: session.gender,
-      personality: session.personality,
-    });
+    const speechOptions = { gender: session.interviewer.voicePreference, interviewerId: session.interviewer.id, personality: session.personality };
+    if (opts.reaction && opts.reaction.en) {
+      el.interviewerStatus.textContent = opts.reaction.en;
+      await IQ.speech.speak(opts.reaction.en, speechOptions);
+      if (!isCurrent(token)) return;
+    }
+    const result = await IQ.speech.speak(session.currentQuestion.text.en, speechOptions);
     if (!isCurrent(token)) return;
     if (state.phase !== IQ.interviewState.PHASES.PRESENTING) return;
     state.set(IQ.interviewState.PHASES.READY);
     setInterviewerState("waiting", t("yourTurn"));
-    if (!opts.preserveInput) startPrepTimer();
+    if (opts.preserveInput && preservedPrepRemaining > 0) restorePrepTimer(preservedPrepRemaining);
+    else if (!opts.preserveInput) startPrepTimer();
     updateControls();
-    if (!result.ok && result.reason !== "unsupported" && result.reason !== "end") IQ.ui.toast("The question is visible on screen, so you can continue without audio.");
+    if (!result.ok && result.reason !== "unsupported" && result.reason !== "end") IQ.ui.toast(t("voiceUnavailable"));
   }
 
   function renderCurrentTurn(options) {
     const opts = options || {};
     const question = session.currentQuestion;
-    el.stageLabel.textContent = IQ.i18n.getText(IQ.questions.STAGE_LABELS[question.stage] || { en: "Follow-up" });
+    el.stageLabel.textContent = question.isFollowUp ? t("followUp") : IQ.i18n.getText(IQ.questions.STAGE_LABELS[question.stage] || { en: t("followUp") });
     const completedMain = session.mainIndex;
     const totalMain = session.plan.length;
     el.questionProgress.textContent = `${t("interviewProgress")} · ${Math.min(completedMain + 1, totalMain)} / ${totalMain}`;
@@ -244,6 +264,7 @@
     renderQuestionTranslation();
     el.hintPanel.hidden = true;
     el.quickTipPanel.hidden = true;
+    el.practiceFeedbackPanel.hidden = true;
     if (!opts.preserveInput) { el.answerInput.value = ""; el.liveTranscript.textContent = ""; }
   }
 
@@ -271,15 +292,20 @@
     el.btnSkipQuestion.disabled = !controls.canSkip;
     el.btnRepeatQuestion.disabled = !controls.canRepeat;
     el.btnEndInterview.disabled = !controls.canEnd;
-    el.answerInput.disabled = state.phase === IQ.interviewState.PHASES.SUBMITTING || state.phase === IQ.interviewState.PHASES.CLOSING;
+    el.btnContinueInterview.disabled = !controls.canContinue;
+    el.btnRetryAnswer.disabled = !controls.canRetry;
+    el.btnHearFeedback.disabled = !controls.canHearFeedback;
+    el.answerInput.disabled = state.phase === IQ.interviewState.PHASES.SUBMITTING || state.phase === IQ.interviewState.PHASES.CLOSING || state.phase === IQ.interviewState.PHASES.REVIEWING;
     if (state.phase === IQ.interviewState.PHASES.RECORDING) {
       el.micStatusLabel.textContent = `${t("listening")} — ${t("stopAnswer")} keeps your text editable.`;
     } else if (!IQ.speech.hasSTT) {
-      el.micStatusLabel.textContent = "Speech recognition is unavailable in this browser. Type your English answer instead.";
+      el.micStatusLabel.textContent = t("speakFallback");
     } else if (state.phase === IQ.interviewState.PHASES.SUBMITTING) {
       el.micStatusLabel.textContent = t("processing");
+    } else if (state.phase === IQ.interviewState.PHASES.REVIEWING) {
+      el.micStatusLabel.textContent = t("applyBeforeNext");
     } else if (state.phase === IQ.interviewState.PHASES.READY) {
-      el.micStatusLabel.textContent = "Your answer stays editable. Start recording or type when ready.";
+      el.micStatusLabel.textContent = t("typingAvailable");
     }
     renderPowerUps();
   }
@@ -352,53 +378,92 @@
     submitAnswer(answer, {});
   }
 
-  function startPrepTimer() {
-    clearPrepTimer();
-    session.prepRemaining = session.demoSpeed ? 8 : 20;
-    el.prepTimer.hidden = false;
-    updatePrepTimer();
+  function schedulePrepTimer() {
     session.prepTimer = setInterval(() => {
       session.prepRemaining -= 1;
       if (session.prepRemaining <= 0) { clearPrepTimer(); return; }
       updatePrepTimer();
     }, 1000);
   }
+
+  function restorePrepTimer(remaining) {
+    if (!remaining || remaining <= 0) return;
+    clearPrepTimer();
+    session.prepRemaining = remaining;
+    el.prepTimer.hidden = false;
+    updatePrepTimer();
+    schedulePrepTimer();
+  }
+
+  function startPrepTimer() {
+    session.prepRemaining = session.demoSpeed ? 8 : 20;
+    el.prepTimer.hidden = false;
+    updatePrepTimer();
+    schedulePrepTimer();
+  }
   function updatePrepTimer() { el.prepTimer.textContent = `Take a moment to think… ${session.prepRemaining}s`; }
   function extendPrepTimer(seconds) { if (!session.prepTimer) startPrepTimer(); session.prepRemaining += seconds; updatePrepTimer(); }
   function clearPrepTimer() { if (session && session.prepTimer) clearInterval(session.prepTimer); if (session) session.prepTimer = null; el.prepTimer.hidden = true; }
+
+  function updateCandidateMemory(entry) {
+    const memory = session.conversationMemory;
+    const analysis = entry.analysis;
+    if (!entry.skipped) {
+      memory.answeredQuestionIds.push(entry.questionId);
+      memory.topics.push(entry.stage);
+      memory.technologies = Array.from(new Set(memory.technologies.concat(analysis.technologies || []))).slice(0, 8);
+      memory.metrics.answers += 1;
+      memory.metrics.words += analysis.wordCount;
+      memory.metrics.fillers += analysis.fillerCount;
+      Object.keys(memory.metrics.starParts).forEach((part) => { if (analysis.starParts[part]) memory.metrics.starParts[part] += 1; });
+      if (!analysis.specificity) memory.missingEvidence.push("specificity");
+      if (!analysis.ownership) memory.missingEvidence.push("action");
+      if (!analysis.starParts.result) memory.missingEvidence.push("result");
+      memory.missingEvidence = Array.from(new Set(memory.missingEvidence)).slice(-4);
+    }
+  }
+
+  function memorySummary() {
+    const memory = session.conversationMemory;
+    return {
+      coveredStages: Array.from(new Set(memory.topics)).slice(-6),
+      technologies: memory.technologies.slice(0, 6),
+      gaps: memory.missingEvidence.slice(-3),
+      priorFollowUpKinds: memory.followUpKinds.slice(-3),
+    };
+  }
+
+  function localFollowUpKind(entry, question) {
+    const analysis = entry.analysis;
+    const tried = session.conversationMemory.followUpKinds;
+    const candidates = [];
+    if (!analysis.ownership) candidates.push("action");
+    if (!analysis.starParts.result) candidates.push("result");
+    if (!analysis.specificity || analysis.wordCount < 18) candidates.push("specificity");
+    if (question.stage === "impact" && !analysis.metric) candidates.push("metric");
+    return candidates.find((kind) => !tried.includes(kind)) || candidates[0] || null;
+  }
 
   async function submitAnswer(rawText, options) {
     const opts = options || {};
     if (!session || session.complete || !state.can(opts.skipped ? "skip" : "submit")) return;
     const token = session.id;
     state.transition(opts.skipped ? "skip" : "submit");
+    const snapshot = {
+      mainIndex: session.mainIndex, currentQuestion: clone(session.currentQuestion), currentTurnKind: session.currentTurnKind,
+      followUpsUsed: session.followUpsUsed, followedMainIds: Array.from(session.followedMainIds), transcriptLength: session.transcript.length,
+      xpEarned: session.xpEarned, doubleXPNext: session.activePowerUps.doubleXPNext, conversationMemory: clone(session.conversationMemory),
+      hintUsedForCurrent: session.hintUsedForCurrent, prepRemaining: session.prepRemaining,
+    };
     clearPrepTimer();
     IQ.speech.abortListening();
     session.pendingFinish = false;
     setInterviewerState("thinking", t("thinking"));
     updateControls();
-    const snapshot = {
-      mainIndex: session.mainIndex,
-      currentQuestion: clone(session.currentQuestion),
-      currentTurnKind: session.currentTurnKind,
-      followUpsUsed: session.followUpsUsed,
-      followedMainIds: Array.from(session.followedMainIds),
-      transcriptLength: session.transcript.length,
-      xpEarned: session.xpEarned,
-      doubleXPNext: session.activePowerUps.doubleXPNext,
-    };
     const analysis = IQ.feedback.analyzeAnswer(rawText);
     const entry = {
-      questionId: session.currentQuestion.id,
-      question: session.currentQuestion.text.en,
-      questionText: clone(session.currentQuestion.text),
-      answer: rawText,
-      analysis,
-      awardedXP: 0,
-      skipped: Boolean(opts.skipped),
-      hintUsed: session.hintUsedForCurrent,
-      turnKind: session.currentTurnKind,
-      stage: session.currentQuestion.stage,
+      questionId: session.currentQuestion.id, question: session.currentQuestion.text.en, questionText: clone(session.currentQuestion.text), answer: rawText,
+      analysis, awardedXP: 0, skipped: Boolean(opts.skipped), hintUsed: session.hintUsedForCurrent, turnKind: session.currentTurnKind, stage: session.currentQuestion.stage,
     };
     session.transcript.push(entry);
     session.lastSubmission = snapshot;
@@ -411,18 +476,94 @@
       IQ.game.save(gameState);
       IQ.ui.renderHUD(gameState);
     }
+    updateCandidateMemory(entry);
     if (session.mode === "practice" && !opts.skipped) {
-      el.quickTipPanel.hidden = false;
-      el.quickTipText.textContent = analysis.quickTip;
+      session.pendingPracticeEntry = entry;
+      state.transition("review");
+      renderPracticeFeedback(entry);
+      setInterviewerState("waiting", t("applyBeforeNext"));
+      updateControls();
+      return;
     }
-    try {
-      await decideNextTurn(entry, opts, token);
-    } catch (error) {
-      if (isCurrent(token)) advanceMainQuestion();
+    await resolveNextTurn(entry, opts, token);
+  }
+
+  function renderPracticeFeedback(entry) {
+    const feedback = IQ.feedback.buildImmediateFeedback(entry.analysis, IQ.questions.getRoleFocus(session.roleId));
+    const locale = currentTranslationLanguage();
+    el.practiceFeedbackPanel.hidden = false;
+    el.feedbackScore.textContent = `${feedback.score} / 100`;
+    el.feedbackStrength.textContent = feedback.strength.en;
+    el.feedbackImprovement.textContent = feedback.improvement.en;
+    el.feedbackIndicators.innerHTML = "";
+    feedback.indicators.forEach((indicator) => {
+      const chip = document.createElement("span");
+      chip.className = `feedback-indicator is-${indicator.state}`;
+      chip.textContent = `${indicator.label.en}: ${indicator.value}`;
+      el.feedbackIndicators.appendChild(chip);
+    });
+    const translation = feedback.tip[locale];
+    el.feedbackTipText.textContent = feedback.tip.en;
+    const showTranslation = locale !== "en" && translation && translation !== feedback.tip.en;
+    el.feedbackTipTranslation.hidden = !showTranslation;
+    el.feedbackTipTranslation.textContent = showTranslation ? `${t("translation")}: ${translation}` : "";
+    el.feedbackTipTranslation.dir = IQ.i18n.getLanguage(locale).dir;
+  }
+
+  async function continueAfterFeedback() {
+    if (!session || !state.can("continue") || !session.pendingPracticeEntry) return;
+    const entry = session.pendingPracticeEntry;
+    session.pendingPracticeEntry = null;
+    session.lastSubmission = null;
+    state.transition("continue");
+    el.practiceFeedbackPanel.hidden = true;
+    await resolveNextTurn(entry, {}, session.id);
+  }
+
+  function retryPracticeAnswer() {
+    if (!session || !state.can("retry") || !session.pendingPracticeEntry || !session.lastSubmission) return;
+    const entry = session.pendingPracticeEntry;
+    const snapshot = session.lastSubmission;
+    const removed = session.transcript.pop();
+    if (removed && removed.awardedXP) {
+      gameState.xp = Math.max(0, gameState.xp - removed.awardedXP);
+      session.xpEarned = Math.max(0, session.xpEarned - removed.awardedXP);
+      IQ.game.save(gameState);
+      IQ.ui.renderHUD(gameState);
     }
-    if (!isCurrent(token)) return;
-    if (session.complete) return;
-    await presentCurrentQuestion();
+    session.mainIndex = snapshot.mainIndex;
+    session.currentQuestion = snapshot.currentQuestion;
+    session.currentTurnKind = snapshot.currentTurnKind;
+    session.followUpsUsed = snapshot.followUpsUsed;
+    session.followedMainIds = new Set(snapshot.followedMainIds);
+    session.activePowerUps.doubleXPNext = snapshot.doubleXPNext;
+    session.conversationMemory = snapshot.conversationMemory;
+    session.hintUsedForCurrent = snapshot.hintUsedForCurrent;
+    session.lastSubmission = null;
+    session.pendingPracticeEntry = null;
+    IQ.speech.stopSpeaking();
+    state.transition("retry");
+    el.practiceFeedbackPanel.hidden = true;
+    renderCurrentTurn({ preserveInput: true });
+    el.answerInput.value = entry.answer;
+    if (snapshot.hintUsedForCurrent) showHint();
+    restorePrepTimer(snapshot.prepRemaining);
+    setInterviewerState("waiting", t("yourTurn"));
+    updateControls();
+  }
+
+  function hearPracticeFeedback() {
+    if (!session || !state.controls().canHearFeedback || !session.pendingPracticeEntry) return;
+    const feedback = IQ.feedback.buildImmediateFeedback(session.pendingPracticeEntry.analysis, IQ.questions.getRoleFocus(session.roleId));
+    IQ.speech.speak(feedback.tip.en, { gender: session.interviewer.voicePreference, interviewerId: session.interviewer.id, personality: session.personality });
+  }
+
+  async function resolveNextTurn(entry, opts, token) {
+    try { await decideNextTurn(entry, opts, token); } catch (error) { if (isCurrent(token)) advanceMainQuestion(); }
+    if (!isCurrent(token) || session.complete) return;
+    const reaction = session.pendingTurn;
+    session.pendingTurn = null;
+    await presentCurrentQuestion({ reaction });
   }
 
   async function decideNextTurn(entry, opts, token) {
@@ -435,61 +576,60 @@
       activeRequest = new AbortController();
       try {
         decision = await IQ.ai.requestFollowUp({
-          roleId: session.roleId, stage: question.stage, questionId: question.id, questionEn: question.text.en,
-          answer: entry.answer, personality: session.personality, translationLanguage: currentTranslationLanguage(),
+          roleId: session.roleId, stage: question.stage, questionId: question.id, questionEn: question.text.en, answer: entry.answer,
+          personality: session.personality, translationLanguage: currentTranslationLanguage(), candidateMemory: memorySummary(),
         }, { signal: activeRequest.signal });
       } catch (error) {
         if (error.name === "AbortError") return;
         session.usingAI = false;
-      } finally {
-        activeRequest = null;
-      }
+      } finally { activeRequest = null; }
     }
     if (!isCurrent(token)) return;
     if (decision.action === "follow_up") {
-      setFollowUpQuestion(question, { en: decision.questionEn, ...decision.questionTranslation });
+      setFollowUpQuestion(question, { en: decision.questionEn, ...decision.questionTranslation }, "ai");
       return;
     }
-    if (!session.usingAI && entry.analysis.wordCount > 0 && entry.analysis.wordCount < 15) {
-      setFollowUpQuestion(question, IQ.questions.getFollowUp(question).text);
+    const localKind = localFollowUpKind(entry, question);
+    if (localKind) {
+      const local = IQ.questions.getFollowUp(question, localKind);
+      setFollowUpQuestion(question, local.text, localKind);
       return;
     }
     advanceMainQuestion();
   }
 
-  function setFollowUpQuestion(parentQuestion, text) {
+  function setFollowUpQuestion(parentQuestion, text, kind) {
     session.followedMainIds.add(parentQuestion.id);
     session.followUpsUsed += 1;
+    session.conversationMemory.followUpKinds.push(kind || "specificity");
     session.currentTurnKind = "follow_up";
+    session.pendingTurn = IQ.questions.getReaction(session.personality, "followUp");
     session.currentQuestion = {
-      id: `${parentQuestion.id}-follow-up-${session.followUpsUsed}`,
-      parentId: parentQuestion.id,
-      roleId: parentQuestion.roleId,
-      stage: parentQuestion.stage,
-      text: { ...text },
-      hint: parentQuestion.hint,
-      isFollowUp: true,
-      followUpEligible: false,
-      isClosing: false,
+      id: `${parentQuestion.id}-follow-up-${session.followUpsUsed}`, parentId: parentQuestion.id, roleId: parentQuestion.roleId, stage: parentQuestion.stage,
+      text: { ...text }, hint: parentQuestion.hint, isFollowUp: true, followUpKind: kind, followUpEligible: false, isClosing: false,
     };
   }
 
   function advanceMainQuestion() {
-    if (session.currentTurnKind === "main") session.mainIndex += 1;
-    else session.mainIndex += 1;
+    session.mainIndex += 1;
     session.currentTurnKind = "main";
     if (session.mainIndex >= session.plan.length) { finishInterview({ partial: false }); return; }
     session.currentQuestion = session.plan[session.mainIndex];
+    session.pendingTurn = IQ.questions.getReaction(session.personality, "transition");
   }
 
   function renderPowerUps() {
     if (!session || session.complete || !el.powerupBar) return;
-    IQ.ui.renderPowerUps(gameState, usePowerUp, { disabled: state.controls().isBusy || state.phase === IQ.interviewState.PHASES.RECORDING });
+    IQ.ui.renderPowerUps(gameState, usePowerUp, { disabled: state.phase !== IQ.interviewState.PHASES.READY });
   }
 
   async function usePowerUp(key) {
     if (!session || session.complete || state.controls().isBusy) return;
-    if (key === "replay") { await presentCurrentQuestion({ preserveInput: true }); return; }
+    if (key === "replay") {
+      if (session.mode === "real") { IQ.ui.toast("Replay is unavailable in Real Interview Mode."); return; }
+      await presentCurrentQuestion({ preserveInput: true }); return;
+    }
+    if (session.mode === "real" && ["hint", "secondChance"].includes(key)) { IQ.ui.toast("This learning aid is reserved for Practice Mode."); return; }
     if (key === "secondChance" && (!session.lastSubmission || !session.transcript.length)) {
       IQ.ui.toast("Nothing has been submitted yet, so there is nothing to redo.");
       return;
@@ -531,6 +671,7 @@
     session.followUpsUsed = snapshot.followUpsUsed;
     session.followedMainIds = new Set(snapshot.followedMainIds);
     session.activePowerUps.doubleXPNext = snapshot.doubleXPNext;
+    session.conversationMemory = snapshot.conversationMemory || session.conversationMemory;
     session.lastSubmission = null;
     state.set(IQ.interviewState.PHASES.READY);
     renderCurrentTurn();
@@ -566,7 +707,7 @@
     if (!opts.skipClosingSpeech) {
       const closing = "Thank you for practicing with me today. Your training report is ready.";
       el.questionText.textContent = closing;
-      await IQ.speech.speak(closing, { gender: session.gender, personality: session.personality });
+      await IQ.speech.speak(closing, { gender: session.interviewer.voicePreference, interviewerId: session.interviewer.id, personality: session.personality });
     }
     if (!isCurrent(token, true)) return;
     await buildAndShowReport(Boolean(opts.partial));
@@ -649,11 +790,32 @@
     (meta.newAchievements || []).forEach((achievement) => { const chip = document.createElement("span"); chip.className = "achievement-chip"; chip.title = achievement.desc; chip.innerHTML = IQ.ui.icon("star"); const label = document.createElement("span"); label.textContent = achievement.name; chip.appendChild(label); el.reportAchievements.appendChild(chip); });
     createList(el.reportStrengths, report.strengths, translation.strengths, showTranslation);
     createList(el.reportWeaknesses, report.weaknesses, translation.weaknesses, showTranslation);
+    renderReportMetrics(report.metrics || [], locale, showTranslation);
     el.reportEnglishFeedback.innerHTML = "";
     const feedback = document.createElement("span"); feedback.textContent = report.englishFeedback || ""; el.reportEnglishFeedback.appendChild(feedback);
     if (showTranslation && translation.englishFeedback) el.reportEnglishFeedback.appendChild(translationNode(translation.englishFeedback));
     renderPerQuestion(report, meta, locale, showTranslation);
     createList(el.reportNextSteps, report.nextSteps, translation.nextSteps, showTranslation);
+  }
+
+  function renderReportMetrics(metrics, locale, showTranslation) {
+    el.reportMetrics.innerHTML = "";
+    metrics.forEach((item) => {
+      const card = document.createElement("article");
+      card.className = "report-metric";
+      const heading = document.createElement("div"); heading.className = "metric-heading";
+      const title = document.createElement("h3"); title.textContent = item.label && item.label.en ? item.label.en : item.id;
+      const score = document.createElement("span"); score.className = "metric-score"; score.textContent = `${item.score} / 100`;
+      heading.append(title, score); card.appendChild(heading);
+      const track = document.createElement("div"); track.className = "metric-track"; track.setAttribute("role", "progressbar"); track.setAttribute("aria-label", title.textContent); track.setAttribute("aria-valuemin", "0"); track.setAttribute("aria-valuemax", "100"); track.setAttribute("aria-valuenow", String(item.score));
+      const fill = document.createElement("div"); fill.className = "metric-fill"; fill.style.width = `${item.score}%`; track.appendChild(fill); card.appendChild(track);
+      const description = document.createElement("p"); description.textContent = item.description && item.description.en ? item.description.en : ""; card.appendChild(description);
+      if (showTranslation && item.label && item.label[locale]) {
+        const translated = document.createElement("div"); translated.className = "translation-block report-translation"; translated.dir = IQ.i18n.getLanguage(locale).dir;
+        translated.textContent = `${item.label[locale]} — ${(item.description || {})[locale] || ""}`; card.appendChild(translated);
+      }
+      el.reportMetrics.appendChild(card);
+    });
   }
 
   function renderPerQuestion(report, meta, locale, globalTranslation) {
@@ -666,16 +828,16 @@
       if (globalTranslation && qTranslation && qTranslation !== question.textContent) card.appendChild(translationNode(qTranslation));
       if (Object.prototype.hasOwnProperty.call(transcript, "answer")) {
         const label = document.createElement("div"); label.className = "pq-label"; label.textContent = t("answerOriginal"); card.appendChild(label);
-        const answer = document.createElement("blockquote"); answer.className = "pq-answer"; answer.textContent = transcript.answer || "— Skipped —"; answer.dir = "auto"; card.appendChild(answer);
+        const answer = document.createElement("blockquote"); answer.className = "pq-answer"; answer.textContent = transcript.answer || `— ${t("skipped")} —`; answer.dir = "auto"; card.appendChild(answer);
       }
       const toggle = document.createElement("button"); toggle.type = "button"; toggle.className = "card-translation-toggle btn btn-text"; toggle.setAttribute("aria-expanded", String(globalTranslation)); toggle.textContent = globalTranslation ? t("hideTranslation") : t("showTranslation"); card.appendChild(toggle);
       const translationArea = document.createElement("div"); translationArea.className = "card-translation-area"; translationArea.hidden = !globalTranslation;
       const content = () => {
         card.querySelectorAll(".card-coaching").forEach((node) => node.remove());
         const coaching = document.createElement("div"); coaching.className = "card-coaching";
-        const tipLabel = document.createElement("div"); tipLabel.className = "pq-label"; tipLabel.textContent = "Coach tip"; coaching.appendChild(tipLabel);
+        const tipLabel = document.createElement("div"); tipLabel.className = "pq-label"; tipLabel.textContent = t("coachTip"); coaching.appendChild(tipLabel);
         const tip = document.createElement("p"); tip.className = "pq-tip"; tip.textContent = item.tip || ""; coaching.appendChild(tip);
-        const exampleLabel = document.createElement("div"); exampleLabel.className = "pq-label"; exampleLabel.textContent = "Example of a stronger answer"; coaching.appendChild(exampleLabel);
+        const exampleLabel = document.createElement("div"); exampleLabel.className = "pq-label"; exampleLabel.textContent = t("strongerExample"); coaching.appendChild(exampleLabel);
         const example = document.createElement("div"); example.className = "pq-improved"; example.textContent = item.improvedExample || ""; coaching.appendChild(example);
         card.insertBefore(coaching, toggle);
         translationArea.innerHTML = "";
