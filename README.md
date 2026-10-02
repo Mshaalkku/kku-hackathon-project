@@ -2,6 +2,26 @@
 
 **Practice the interview before the real one.**
 
+## 🎮 Live Demo
+**Try Ready2Interview here:**
+https://mshaalkku.github.io/kku-hackathon-project/
+
+## The Problem
+Many candidates have the knowledge and skills needed for a job, but still struggle during interviews because of nervousness, pressure, unclear answers, or difficulty presenting their strengths effectively. This can happen even when their English is good.
+
+Knowing interview answers is different from practicing how to deliver them in a realistic interview.
+
+## How Ready2Interview Helps
+Ready2Interview lets candidates practice the interview experience before the real one.
+
+Instead of only reading common interview questions, users practice answering realistic, role-specific questions by voice or text. The system analyzes their responses to identify demonstrated strengths, weaknesses, missing details, clarity, relevance, structure, and communication issues.
+
+It then provides practical feedback showing what the candidate did well, what needs improvement, and how the answer could be stronger.
+
+Through repeated practice, users can become more familiar with interview pressure, identify recurring mistakes, build on their strengths, and arrive at the real interview better prepared.
+
+The goal is not to guarantee a job. The goal is to help candidates reduce avoidable mistakes and present their real abilities more effectively.
+
 A voice-first English job-interview practice simulator. Meet Sarah or David in a professional virtual interview room, answer by microphone or typing, earn career-training XP, and receive a practical training report.
 
 > **Learning tool only:** Scores and coaching are for practice, not a real hiring assessment.
