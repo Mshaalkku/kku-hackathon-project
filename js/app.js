@@ -45,7 +45,7 @@
       "theme-toggle", "player-summary", "candidate-name", "candidate-name-error", "session-candidate", "report-candidate-name", "ai-status-note", "interface-language-select", "translation-language-select", "interview-language-select", "interview-language-note",
       "btn-start-interview", "btn-load-example", "demo-speed-toggle", "interview-translation-language-select", "subtitle-toggle", "btn-end-interview",
       "interviewer-character", "character-sarah", "character-david", "interviewer-name", "interviewer-role-label", "interviewer-status", "stage-label", "question-progress", "progress-dots",
-      "question-text", "question-translation", "question-translation-text", "prep-timer", "hint-panel", "hint-text", "hint-translation", "quick-tip-panel", "quick-tip-text",
+      "question-text", "question-translation", "question-translation-text", "prep-timer", "hint-panel", "hint-text", "hint-translation", "quick-tip-panel", "quick-tip-text", "quick-tip-translation",
       "office-scene", "practice-feedback-panel", "feedback-score", "feedback-strength", "feedback-strength-translation", "feedback-improvement", "feedback-improvement-translation", "feedback-indicators", "feedback-tip-text", "feedback-tip-translation", "btn-continue-interview", "btn-retry-answer", "btn-hear-feedback",
       "live-transcript", "answer-input", "mic-status-label", "btn-start-answer", "btn-stop-answer", "btn-finish-answer", "btn-skip-question", "btn-repeat-question", "powerup-bar",
       "end-interview-dialog", "btn-cancel-end", "btn-confirm-end", "btn-play-again", "btn-back-setup", "report-global-translation-toggle",
@@ -268,6 +268,7 @@
       pendingFinish: false,
       pendingTurn: null,
       pendingPracticeEntry: null,
+      currentQuestionAid: null,
       conversationMemory: { answeredQuestionIds: [], followUpKinds: [], topics: [], technologies: [], missingEvidence: [], metrics: { answers: 0, words: 0, fillers: 0, starParts: { situation: 0, task: 0, action: 0, result: 0 } } },
       complete: false,
       reportCompleted: false,
@@ -309,11 +310,11 @@
     const preservedPrepRemaining = opts.preserveInput ? session.prepRemaining : 0;
     const token = ++operationId;
     session.id = token;
-    cancelActiveWork({ keepSpeech: false });
+    cancelActiveWork({ keepSpeech: false, keepPrepTimer: Boolean(opts.preserveInput) });
     state.set(IQ.interviewState.PHASES.PRESENTING);
     session.hintUsedForCurrent = preservedHint;
-    clearPrepTimer();
-    renderCurrentTurn({ preserveInput: opts.preserveInput });
+    clearPrepTimer({ keepVisible: Boolean(opts.preserveInput) });
+    renderCurrentTurn({ preserveInput: opts.preserveInput, questionAid: opts.questionAid });
     if (preservedHint) showHint();
     updateControls();
     setInterviewerState("speaking", t("speaking"));
@@ -361,9 +362,31 @@
     el.questionText.dir = "ltr";
     renderQuestionTranslation();
     el.hintPanel.hidden = true;
-    el.quickTipPanel.hidden = true;
+    const activeAid = opts.questionAid || (session.currentQuestionAid && session.currentQuestionAid.questionId === question.id ? session.currentQuestionAid : null);
+    renderQuestionAid(activeAid);
     el.practiceFeedbackPanel.hidden = true;
     if (!opts.preserveInput) { el.answerInput.value = ""; el.liveTranscript.textContent = ""; }
+  }
+
+  function renderQuestionAid(aid) {
+    if (!el.quickTipPanel || !el.quickTipText || !el.quickTipTranslation) return;
+    if (!aid || !aid.text) {
+      el.quickTipPanel.hidden = true;
+      el.quickTipText.textContent = "";
+      el.quickTipTranslation.hidden = true;
+      el.quickTipTranslation.textContent = "";
+      return;
+    }
+    const locale = currentTranslationLanguage();
+    const source = aid.text.en || "";
+    const translation = IQ.i18n.getText(aid.text, locale);
+    el.quickTipPanel.hidden = false;
+    el.quickTipText.textContent = source;
+    el.quickTipText.dir = "ltr";
+    const showTranslation = locale !== "en" && translation && translation !== source;
+    el.quickTipTranslation.hidden = !showTranslation;
+    el.quickTipTranslation.textContent = showTranslation ? `${t("translation")}: ${translation}` : "";
+    el.quickTipTranslation.dir = IQ.i18n.getLanguage(locale).dir;
   }
 
   function renderQuestionTranslation() {
@@ -568,9 +591,27 @@
     return candidates.find((kind) => !tried.includes(kind)) || candidates[0] || null;
   }
 
+  async function handleQuestionRequest(kind) {
+    if (!session || session.complete || !session.currentQuestion) return;
+    const aid = IQ.questions.getQuestionAid(session.currentQuestion, kind, session.personality);
+    session.currentQuestionAid = aid;
+    el.answerInput.value = "";
+    el.liveTranscript.textContent = "";
+    await presentCurrentQuestion({
+      preserveInput: true,
+      reaction: aid.text,
+      questionAid: aid,
+    });
+  }
+
   async function submitAnswer(rawText, options) {
     const opts = options || {};
     if (!session || session.complete || !state.can(opts.skipped ? "skip" : "submit")) return;
+    const questionRequest = !opts.skipped && IQ.questions.detectQuestionRequest(rawText);
+    if (questionRequest) {
+      await handleQuestionRequest(questionRequest);
+      return;
+    }
     const token = session.id;
     state.transition(opts.skipped ? "skip" : "submit");
     const snapshot = {
@@ -1041,7 +1082,7 @@
 
   function cancelActiveWork(options) {
     const opts = options || {};
-    clearPrepTimer();
+    clearPrepTimer({ keepVisible: Boolean(opts.keepPrepTimer) });
     if (activeRequest) { activeRequest.abort(); activeRequest = null; }
     IQ.speech.abortListening();
     if (!opts.keepSpeech) IQ.speech.stopSpeaking();

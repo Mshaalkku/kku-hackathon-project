@@ -235,6 +235,88 @@ window.IQ = window.IQ || {};
     closing: local("Ask a genuine question about expectations, the team, or how success is measured.", "اطرح سؤالاً حقيقياً عن التوقعات أو الفريق أو كيفية قياس النجاح.", "Haz una pregunta genuina sobre expectativas, el equipo o cómo se mide el éxito.", "Posez une vraie question sur les attentes, l'équipe ou la manière de mesurer la réussite.", "Stelle eine echte Frage zu Erwartungen, Team oder Erfolgsmessung.", "अपेक्षाओं, टीम या सफलता मापने के तरीके के बारे में सच्चा प्रश्न पूछें।"),
   };
 
+  const QUESTION_AID_LEADS = {
+    friendly: local("Of course — ", "بالتأكيد — ", "Claro — ", "Bien sûr — ", "Natürlich — ", "बिलकुल — "),
+    professional: local("Certainly. ", "بالتأكيد. ", "Desde luego. ", "Bien sûr. ", "Selbstverständlich. ", "निश्चित रूप से। "),
+    strict: local("To clarify: ", "للتوضيح: ", "Para aclararlo: ", "Pour préciser : ", "Zur Klarstellung: ", "स्पष्टीकरण के लिए: "),
+  };
+
+  const QUESTION_AID_BRIDGES = {
+    repeat: local("I’ll repeat the question.", "سأعيد السؤال.", "Repetiré la pregunta.", "Je vais répéter la question.", "Ich wiederhole die Frage.", "मैं प्रश्न दोहराता हूँ।"),
+    clarify: local("Here is what I am looking for: ", "هذا ما أبحث عنه: ", "Esto es lo que busco: ", "Voici ce que je cherche : ", "Darauf achte ich: ", "मैं यह जानना चाहता हूँ: "),
+    example: local("Choose a real situation rather than a model answer. A useful approach is: ", "اختر موقفاً حقيقياً بدلاً من إجابة نموذجية. نهج مفيد هو: ", "Elige una situación real en lugar de una respuesta modelo. Un enfoque útil es: ", "Choisissez une situation réelle plutôt qu'une réponse modèle. Une approche utile est : ", "Wähle eine reale Situation statt einer Musterantwort. Ein hilfreicher Ansatz ist: ", "तैयार नमूना उत्तर के बजाय वास्तविक स्थिति चुनें। एक उपयोगी तरीका है: "),
+    context: local("For this {role} question, focus on: ", "في سؤال {role} هذا، ركّز على: ", "Para esta pregunta de {role}, céntrate en: ", "Pour cette question sur {role}, concentrez-vous sur : ", "Konzentriere dich bei dieser Frage zu {role} auf: ", "इस {role} प्रश्न के लिए, इस पर ध्यान दें: "),
+  };
+
+  const QUESTION_AID_GUIDANCE = {
+    introduction: local("what interests you about {role} and one relevant strength or experience.", "ما يثير اهتمامك في {role} ونقطة قوة أو تجربة واحدة ذات صلة.", "lo que te interesa de {role} y una fortaleza o experiencia relevante.", "ce qui vous intéresse dans {role} et une force ou expérience pertinente.", "was dich an {role} interessiert und eine relevante Stärke oder Erfahrung.", "{role} में आपकी रुचि और एक प्रासंगिक ताकत या अनुभव।"),
+    background: local("one relevant experience, your personal contribution, the action you took, and the result.", "تجربة واحدة ذات صلة ومساهمتك الشخصية والإجراء الذي اتخذته والنتيجة.", "una experiencia relevante, tu contribución personal, la acción que realizaste y el resultado.", "une expérience pertinente, votre contribution personnelle, l'action menée et le résultat.", "eine relevante Erfahrung, deinen persönlichen Beitrag, deine Handlung und das Ergebnis.", "एक प्रासंगिक अनुभव, आपका व्यक्तिगत योगदान, आपके द्वारा किया गया कार्य और परिणाम।"),
+    role: local("how you developed {focus}; choose one situation that demonstrates those skills.", "كيف طورت {focus}؛ اختر موقفاً واحداً يوضح هذه المهارات.", "cómo desarrollaste {focus}; elige una situación que demuestre esas habilidades.", "comment vous avez développé {focus} ; choisissez une situation qui démontre ces compétences.", "wie du {focus} entwickelt hast; wähle eine Situation, die diese Fähigkeiten zeigt.", "आपने {focus} कैसे विकसित किया; एक स्थिति चुनें जो इन कौशलों को दिखाती हो।"),
+    behavioral: local("one situation with a different viewpoint, how you listened and communicated, and how you moved the work forward.", "موقفاً واحداً تضمن وجهة نظر مختلفة، وكيف استمعت وتواصلت، وكيف دفعت العمل إلى الأمام.", "una situación con un punto de vista diferente, cómo escuchaste y te comunicaste, y cómo hiciste avanzar el trabajo.", "une situation avec un point de vue différent, votre écoute et votre communication, et la manière dont vous avez fait avancer le travail.", "eine Situation mit einer anderen Sichtweise, wie du zugehört und kommuniziert hast und wie du die Arbeit vorangebracht hast.", "एक अलग दृष्टिकोण वाली स्थिति, आपने कैसे सुना और संवाद किया, और काम को कैसे आगे बढ़ाया।"),
+    challenge: local("one difficult problem, what you prioritized first, the action you took, and what happened next.", "مشكلة صعبة واحدة، وما الذي أعطيته الأولوية أولاً، والإجراء الذي اتخذته، وما حدث بعد ذلك.", "un problema difícil, qué priorizaste primero, la acción que realizaste y qué ocurrió después.", "un problème difficile, ce que vous avez priorisé, l'action menée et ce qui s'est passé ensuite.", "ein schwieriges Problem, was du zuerst priorisiert hast, deine Handlung und was danach geschah.", "एक कठिन समस्या, आपने पहले किसे प्राथमिकता दी, क्या कार्रवाई की और आगे क्या हुआ।"),
+    impact: local("one specific outcome, who benefited, what you personally did, and how you knew it helped.", "نتيجة محددة واحدة، ومن استفاد، وما الذي فعلته شخصياً، وكيف عرفت أنه ساعد.", "un resultado concreto, quién se benefició, qué hiciste personalmente y cómo supiste que ayudó.", "un résultat précis, qui en a bénéficié, ce que vous avez fait personnellement et comment vous avez su que cela avait aidé.", "ein konkretes Ergebnis, wer davon profitiert hat, was du persönlich getan hast und woran du die Wirkung erkannt hast.", "एक विशिष्ट परिणाम, किसे लाभ हुआ, आपने व्यक्तिगत रूप से क्या किया और आपको कैसे पता चला कि इससे मदद मिली।"),
+    growth: local("one skill you want to strengthen, why it matters for your next role, and a practical learning step.", "مهارة واحدة تريد تقويتها، ولماذا تهم لدورك القادم، وخطوة تعلم عملية.", "una habilidad que quieres fortalecer, por qué importa para tu próximo puesto y un paso práctico de aprendizaje.", "une compétence que vous souhaitez renforcer, son importance pour votre prochain poste et une étape d'apprentissage concrète.", "eine Fähigkeit, die du stärken möchtest, warum sie für deine nächste Rolle wichtig ist, und einen praktischen Lernschritt.", "एक कौशल जिसे आप मजबूत करना चाहते हैं, यह अगली भूमिका के लिए क्यों महत्वपूर्ण है और एक व्यावहारिक सीखने का कदम।"),
+    closing: local("a genuine question about the role, team, expectations, or how success will be measured.", "سؤالاً حقيقياً عن الوظيفة أو الفريق أو التوقعات أو كيفية قياس النجاح.", "una pregunta genuina sobre el puesto, el equipo, las expectativas o cómo se medirá el éxito.", "une vraie question sur le poste, l'équipe, les attentes ou la façon dont la réussite sera mesurée.", "eine echte Frage zur Rolle, zum Team, zu Erwartungen oder dazu, wie Erfolg gemessen wird.", "भूमिका, टीम, अपेक्षाओं या सफलता कैसे मापी जाएगी, इस बारे में एक वास्तविक प्रश्न।"),
+    fallback: local("the specific detail in the question, what you personally did, and the outcome.", "التفصيل المحدد في السؤال، وما الذي فعلته شخصياً، والنتيجة.", "el detalle específico de la pregunta, lo que hiciste personalmente y el resultado.", "le détail précis de la question, ce que vous avez fait personnellement et le résultat.", "das konkrete Detail der Frage, was du persönlich getan hast und das Ergebnis.", "प्रश्न का विशिष्ट विवरण, आपने व्यक्तिगत रूप से क्या किया और परिणाम।"),
+  };
+
+  function normalizeQuestionRequest(rawText) {
+    return String(rawText || "")
+      .toLowerCase()
+      .replace(/[’‘]/g, "'")
+      .replace(/[^a-z0-9?'\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .replace(/[?]+$/g, "")
+      .trim();
+  }
+
+  function detectQuestionRequest(rawText) {
+    const value = normalizeQuestionRequest(rawText);
+    if (!value || value.split(" ").length > 14) return null;
+    const matches = {
+      repeat: [
+        /^(?:can|could|would|will) you (?:please )?(?:repeat|say) (?:the )?(?:question|that|it)(?: again)?(?: please)?$/,
+        /^(?:please )?(?:repeat|say) (?:the )?(?:question|that|it)(?: again)?(?: please)?$/,
+        /^one more time(?: please)?$/,
+      ],
+      clarify: [
+        /^what do you mean(?: by (?:that|the question))?$/,
+        /^(?:can|could|would) you (?:please )?(?:clarify|explain|rephrase)(?: (?:that|the question|it))?(?: please)?$/,
+        /^i (?:do not|don't) understand(?: (?:the question|what you mean|that))?$/,
+      ],
+      example: [
+        /^(?:can|could|would) you (?:please )?(?:give|provide|share) (?:me )?(?:an? )?example(?: (?:of that|for this))?(?: please)?$/,
+        /^what (?:kind of )?example do you mean$/,
+      ],
+      context: [
+        /^(?:can|could|would) you (?:please )?(?:give|provide) (?:me )?(?:more )?context(?: (?:for this))?(?: please)?$/,
+        /^what (?:should|would you like me to) talk about$/,
+        /^what are you looking for(?: in (?:my )?answer)?$/,
+      ],
+    };
+    const kinds = Object.keys(matches).filter((kind) => matches[kind].some((pattern) => pattern.test(value)));
+    return kinds.length === 1 ? kinds[0] : null;
+  }
+
+  function getQuestionAid(question, kind, personality) {
+    const requestKind = QUESTION_AID_BRIDGES[kind] ? kind : "clarify";
+    const activeQuestion = question || {};
+    const role = getCareer(activeQuestion.roleId).label;
+    const focus = ROLE_FOCUS[activeQuestion.roleId] || ROLE_FOCUS.general;
+    const guidance = QUESTION_AID_GUIDANCE[activeQuestion.stage] || QUESTION_AID_GUIDANCE.fallback;
+    const lead = QUESTION_AID_LEADS[personality] || QUESTION_AID_LEADS.professional;
+    const variables = { role, focus };
+    const text = {};
+    LOCALES.forEach((locale) => {
+      const prefix = requestKind === "repeat" ? "" : lead[locale] || lead.en || "";
+      const bridge = format(QUESTION_AID_BRIDGES[requestKind], variables, locale);
+      const detail = requestKind === "repeat" ? "" : ` ${format(guidance, variables, locale)}`;
+      text[locale] = `${prefix}${bridge}${detail}`.trim();
+    });
+    return { kind: requestKind, questionId: activeQuestion.id || "", text };
+  }
+
   const FOLLOW_UPS = {
     specificity: local(
       "Could you make that more specific with one concrete example?",
@@ -383,6 +465,8 @@ window.IQ = window.IQ || {};
     getPlan,
     getFollowUp,
     getReaction,
+    detectQuestionRequest,
+    getQuestionAid,
     getRoleFocus,
     getQuestionSet,
     getHint,
