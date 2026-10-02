@@ -200,12 +200,14 @@
       const selected = choices[choiceKey] === item.value;
       button.setAttribute("aria-pressed", String(selected));
       button.setAttribute("aria-label", selected ? t("selectedOption", { label: item.label }) : t("option", { label: item.label }));
-      if (choiceKey === "interviewer" && item.value === "david") {
+      if (choiceKey === "interviewer") {
         button.classList.add("has-interviewer-portrait");
         const portrait = document.createElement("span");
-        portrait.className = "interviewer-option-portrait interviewer-option-david";
+        portrait.className = `interviewer-option-portrait interviewer-option-${item.value}`;
         portrait.setAttribute("aria-hidden", "true");
-        portrait.innerHTML = '<svg viewBox="0 0 48 48" focusable="false"><path class="portrait-jacket" d="M9 48c2-13 8-19 15-20 7 1 13 7 15 20z"/><path class="portrait-shirt" d="m18 29 6 7 6-7 2 12H16z"/><path class="portrait-tie" d="m22 30h4l-1 6 1 8-2 3-2-3 1-8z"/><path class="portrait-skin" d="M14 17c0-10 4-15 10-15s10 5 10 15v6c0 7-4 11-10 11s-10-4-10-11z"/><path class="portrait-hair" d="M13 18C13 7 18 1 25 1c7 0 11 5 10 17-5-4-14-6-22 0z"/><path class="portrait-brow" d="M17 20h5m4 0h5"/><circle class="portrait-eye" cx="19" cy="23" r="1.2"/><circle class="portrait-eye" cx="29" cy="23" r="1.2"/><path class="portrait-beard" d="M15 27c2 5 5 7 9 7s7-2 9-7c-5 4-13 4-18 0z"/></svg>';
+        portrait.innerHTML = item.value === "david"
+          ? '<svg viewBox="0 0 48 48" focusable="false"><path class="portrait-jacket" d="M9 48c2-13 8-19 15-20 7 1 13 7 15 20z"/><path class="portrait-shirt" d="m18 29 6 7 6-7 2 12H16z"/><path class="portrait-tie" d="m22 30h4l-1 6 1 8-2 3-2-3 1-8z"/><path class="portrait-skin" d="M14 17c0-10 4-15 10-15s10 5 10 15v6c0 7-4 11-10 11s-10-4-10-11z"/><path class="portrait-hair" d="M13 18C13 7 18 1 25 1c7 0 11 5 10 17-5-4-14-6-22 0z"/><path class="portrait-brow" d="M17 20h5m4 0h5"/><circle class="portrait-eye" cx="19" cy="23" r="1.2"/><circle class="portrait-eye" cx="29" cy="23" r="1.2"/><path class="portrait-beard" d="M15 27c2 5 5 7 9 7s7-2 9-7c-5 4-13 4-18 0z"/></svg>'
+          : '<svg viewBox="0 0 48 48" focusable="false"><path class="portrait-jacket" d="M9 48c2-13 8-19 15-20 7 1 13 7 15 20z"/><path class="portrait-blouse" d="m18 29 6 8 6-8 3 14H15z"/><path class="portrait-skin" d="M15 17c0-10 4-15 9-15s9 5 9 15v7c0 7-4 11-9 11s-9-4-9-11z"/><path class="portrait-hair-back" d="M12 18C10 8 15 1 24 1s14 7 12 18v11l-5-5v-9H17v10l-5 5z"/><path class="portrait-hair" d="M13 18C12 7 18 1 25 2c8 1 11 8 9 18l-3-4v-6c-6 4-13 4-16 1v10z"/><circle class="portrait-eye" cx="20" cy="23" r="1.2"/><circle class="portrait-eye" cx="28" cy="23" r="1.2"/><path class="portrait-smile" d="M20 29c3 2 6 2 8 0"/></svg>';
         button.appendChild(portrait);
       }
       const label = document.createElement("span");

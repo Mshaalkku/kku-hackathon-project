@@ -237,6 +237,14 @@ select:focus { border-color: var(--primary); }
 .interviewer-options .has-interviewer-portrait .option-sub { grid-column: 2; margin-block-start: 0; }
 .interviewer-option-portrait { grid-row: 1 / span 2; display: grid; place-items: end center; align-self: stretch; overflow: hidden; border-radius: 50% 50% 12px 12px; background: linear-gradient(145deg, #d5e1e0, #a9bbc3); }
 .interviewer-option-portrait svg { inline-size: 46px; block-size: 50px; transform: translateY(4px); }
+.interviewer-option-sarah { background: linear-gradient(145deg, #dbe5e6, #adc6cd); }
+.interviewer-option-sarah .portrait-jacket { fill: #315066; }
+.interviewer-option-sarah .portrait-blouse { fill: #fcf7ec; }
+.interviewer-option-sarah .portrait-skin { fill: #cd8e70; }
+.interviewer-option-sarah .portrait-hair-back { fill: #343442; }
+.interviewer-option-sarah .portrait-hair { fill: #272a35; }
+.interviewer-option-sarah .portrait-eye { fill: #19232b; }
+.interviewer-option-sarah .portrait-smile { fill: none; stroke: #833f4b; stroke-width: 1.8; stroke-linecap: round; }
 .interviewer-option-david .portrait-jacket { fill: #263c4c; }
 .interviewer-option-david .portrait-shirt { fill: #fcf7ec; }
 .interviewer-option-david .portrait-tie { fill: #8a3943; }
