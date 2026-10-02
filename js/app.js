@@ -46,7 +46,7 @@
       "btn-start-interview", "btn-load-example", "demo-speed-toggle", "interview-translation-language-select", "subtitle-toggle", "btn-end-interview",
       "interviewer-character", "character-sarah", "character-david", "interviewer-name", "interviewer-role-label", "interviewer-status", "stage-label", "question-progress", "progress-dots",
       "question-text", "question-translation", "question-translation-text", "prep-timer", "hint-panel", "hint-text", "hint-translation", "quick-tip-panel", "quick-tip-text",
-      "practice-feedback-panel", "feedback-score", "feedback-strength", "feedback-strength-translation", "feedback-improvement", "feedback-improvement-translation", "feedback-indicators", "feedback-tip-text", "feedback-tip-translation", "btn-continue-interview", "btn-retry-answer", "btn-hear-feedback",
+      "office-scene", "practice-feedback-panel", "feedback-score", "feedback-strength", "feedback-strength-translation", "feedback-improvement", "feedback-improvement-translation", "feedback-indicators", "feedback-tip-text", "feedback-tip-translation", "btn-continue-interview", "btn-retry-answer", "btn-hear-feedback",
       "live-transcript", "answer-input", "mic-status-label", "btn-start-answer", "btn-stop-answer", "btn-finish-answer", "btn-skip-question", "btn-repeat-question", "powerup-bar",
       "end-interview-dialog", "btn-cancel-end", "btn-confirm-end", "btn-play-again", "btn-back-setup", "report-global-translation-toggle",
       "report-mode-note", "report-example-banner", "report-score-ring", "report-score-value", "report-xp-gained", "report-level-banner", "report-achievements",
@@ -150,6 +150,8 @@
     el.demoSpeedToggle.addEventListener("change", () => { choices.demoSpeed = el.demoSpeedToggle.checked; });
     el.btnStartInterview.addEventListener("click", startInterview);
     el.btnLoadExample.addEventListener("click", loadExampleReport);
+    document.querySelectorAll(".button-icon").forEach((icon) => { icon.innerHTML = IQ.ui.icon("mic"); });
+    document.querySelectorAll(".voice-helper-icon").forEach((icon) => { icon.innerHTML = IQ.ui.icon("mic"); });
     el.btnStartAnswer.addEventListener("click", startAnswer);
     el.btnStopAnswer.addEventListener("click", stopAnswer);
     el.btnFinishAnswer.addEventListener("click", finishAnswer);
@@ -368,7 +370,10 @@
 
   function updateControls() {
     const controls = state.controls();
+    const isRecording = state.phase === IQ.interviewState.PHASES.RECORDING;
+    const isStopping = state.phase === IQ.interviewState.PHASES.STOPPING;
     el.btnStartAnswer.disabled = !controls.canStartAnswer || !IQ.speech.hasSTT;
+    el.btnStartAnswer.setAttribute("aria-pressed", String(isRecording || isStopping));
     el.btnStopAnswer.disabled = !controls.canStopAnswer;
     el.btnFinishAnswer.disabled = !controls.canFinishAnswer;
     el.btnSkipQuestion.disabled = !controls.canSkip;
@@ -378,8 +383,13 @@
     el.btnRetryAnswer.disabled = !controls.canRetry;
     el.btnHearFeedback.disabled = !controls.canHearFeedback;
     el.answerInput.disabled = state.phase === IQ.interviewState.PHASES.SUBMITTING || state.phase === IQ.interviewState.PHASES.CLOSING || state.phase === IQ.interviewState.PHASES.REVIEWING;
-    if (state.phase === IQ.interviewState.PHASES.RECORDING) {
+    el.answerInput.setAttribute("aria-describedby", isRecording ? "mic-status-label" : "voice-answer-helper mic-status-label");
+    const answerArea = el.answerInput.closest(".answer-area");
+    if (answerArea) answerArea.dataset.recording = String(isRecording || isStopping);
+    if (isRecording) {
       el.micStatusLabel.textContent = t("listeningStatus", { listening: t("listening"), stopAnswer: t("stopAnswer") });
+    } else if (isStopping) {
+      el.micStatusLabel.textContent = t("stoppingMicrophone");
     } else if (!IQ.speech.hasSTT) {
       el.micStatusLabel.textContent = t("speakFallback");
     } else if (state.phase === IQ.interviewState.PHASES.SUBMITTING) {
@@ -406,8 +416,9 @@
       onInterim: (event) => { if (isCurrent(token)) el.liveTranscript.textContent = event.text ? `… ${event.text}` : ""; },
       onFinal: (event) => { if (isCurrent(token)) el.answerInput.value = event.text; },
       onError: (reason) => { if (isCurrent(token)) handleSpeechError(reason); },
-      onEnd: () => {
+      onEnd: (event) => {
         if (!isCurrent(token)) return;
+        if (event && event.text) el.answerInput.value = event.text;
         el.liveTranscript.textContent = "";
         const shouldSubmit = session.pendingFinish;
         session.pendingFinish = false;
@@ -462,9 +473,9 @@
 
   function schedulePrepTimer() {
     session.prepTimer = setInterval(() => {
-      session.prepRemaining -= 1;
-      if (session.prepRemaining <= 0) { clearPrepTimer(); return; }
+      session.prepRemaining = Math.max(0, session.prepRemaining - 1);
       updatePrepTimer();
+      if (session.prepRemaining === 0) clearPrepTimer({ keepVisible: true });
     }, 1000);
   }
 
@@ -483,9 +494,26 @@
     updatePrepTimer();
     schedulePrepTimer();
   }
-  function updatePrepTimer() { el.prepTimer.textContent = t("prepTimer", { seconds: session.prepRemaining }); }
-  function extendPrepTimer(seconds) { if (!session.prepTimer) startPrepTimer(); session.prepRemaining += seconds; updatePrepTimer(); }
-  function clearPrepTimer() { if (session && session.prepTimer) clearInterval(session.prepTimer); if (session) session.prepTimer = null; el.prepTimer.hidden = true; }
+  function updatePrepTimer() {
+    const seconds = Math.max(0, session.prepRemaining);
+    const time = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+    el.prepTimer.innerHTML = IQ.ui.icon("clock", "timer-icon") + `<span class="timer-copy">${t("answerTime")}</span><time datetime="PT${seconds}S">${t("prepTimer", { time, seconds })}</time>`;
+    el.prepTimer.setAttribute("aria-label", t("answerTimeRemaining", { seconds }));
+    el.prepTimer.classList.toggle("is-expired", seconds === 0);
+  }
+  function extendPrepTimer(seconds) {
+    clearPrepTimer({ keepVisible: true });
+    session.prepRemaining = Math.max(0, session.prepRemaining) + seconds;
+    el.prepTimer.hidden = false;
+    updatePrepTimer();
+    schedulePrepTimer();
+  }
+  function clearPrepTimer(options) {
+    const opts = options || {};
+    if (session && session.prepTimer) clearInterval(session.prepTimer);
+    if (session) session.prepTimer = null;
+    if (!opts.keepVisible) el.prepTimer.hidden = true;
+  }
 
   function updateCandidateMemory(entry) {
     const memory = session.conversationMemory;
@@ -747,7 +775,7 @@
       return;
     }
     if (!IQ.game.consumePowerUp(gameState, key)) { IQ.ui.toast(t("noPowerUpsLeft")); return; }
-    if (key === "thinkTime") { extendPrepTimer(session.demoSpeed ? 10 : 20); IQ.ui.toast(t("extraThinkTime"), "success"); }
+    if (key === "thinkTime") { extendPrepTimer(30); IQ.ui.toast(t("extraThinkTime"), "success"); }
     if (key === "doubleXP") { session.activePowerUps.doubleXPNext = true; IQ.ui.toast(t("doubleXpActive"), "success"); }
     if (key === "hint") { session.hintUsedForCurrent = true; showHint(); }
     if (key === "secondChance") useSecondChance();

@@ -10,9 +10,9 @@ A voice-first English job-interview practice simulator. Meet Sarah or David in a
 - **16 career paths:** General / Any Job, Software Engineering, Information Systems, Cybersecurity, AI / Machine Learning, Data Analysis / Data Science, IT Support, Product Management, Project Management, Marketing, Finance / Accounting, Human Resources, Sales, UX/UI Design, Business Analysis, and Customer Service.
 - **Sarah or David:** visibly distinct professional interviewer portraits, matching participant identity, personality choices, and browser voice preference when a suitable installed voice is available.
 - **Real conversation fallback:** deterministic stages never break, while local analysis can ask one targeted follow-up about missing ownership, detail, results, or measurement. Optional AI can add a bounded answer-specific follow-up using a small in-session evidence summary.
-- **Explicit voice controls:** Start Answer, Stop Answer, Finish Answer, Skip Question, Repeat Question, and End Interview. Typing is always available when microphone or speech recognition is unavailable.
+- **Clear voice and typed answering:** use **Answer with Microphone** to convert speech into editable text, see a visible Listening state, then Stop Listening or Finish Answer. Typing remains available when microphone access or speech recognition is unavailable.
 - **Practice / Real Interview modes:** Practice pauses after each answer with concise answer-derived feedback and Continue, Retry, and Hear Feedback actions. Real mode keeps detailed coaching for the final report and limits learning aids during the live interview.
-- **Career game layer:** XP, levels, streaks, achievements, Think Time, Hint, Second Chance, 2× XP, and question replay stay in browser `localStorage`.
+- **Career game layer:** XP, levels, streaks, achievements, **+30 sec Extra Time**, Hint, Second Chance, 2× XP, and question replay stay in browser `localStorage`.
 - **Demo speed:** a three-question path and short preparation timers let a reviewer see the full flow in about a minute.
 - **Partial reports:** End Interview safely creates a report from completed answers instead of losing progress.
 
@@ -49,7 +49,7 @@ Use **Preview an example report** to see invented demo content immediately.
 Before presenting the app, use **Demo speed** to complete setup → interview → feedback → report in about a minute. Check the same path with typing only, keyboard navigation, and an unavailable microphone.
 
 - Review the compact phone journey at 360×800, 375×812, 390×844, 412×915, and 430×932, plus tablet, desktop, and phone landscape. Check more than overflow: the header/HUD must remain fully visible, setup cards must be touch-friendly, Sarah or David must stay visible with each question, and answer/feedback/report controls must remain easy to reach.
-- Check both light and dark themes on setup, interview, feedback, the End Interview dialog, and the report. Reload after switching each theme to confirm the browser-local preference persists without changing game progress or language preferences.
+- Check both light and dark themes on setup, interview, feedback, the End Interview dialog, and the report. While answering, verify the clock-led Answer Time countdown, the +30 sec Extra Time result (including after 0:00), and the clear Listening state; reload after switching each theme to confirm the browser-local preference persists without changing game progress or language preferences.
 - Switch the interface through Arabic (RTL), German, and Hindi: localized chrome, the candidate field, selected cards, interview identity panel, dialog, and report must wrap cleanly; English interview prompts must remain LTR.
 - Verify blank and whitespace-only names are blocked with a focused inline error. Complete a real report and confirm the candidate name is shown only for that active session, never on the example report.
 - After each real next question, keyboard focus should land on the visible question; it must never remain in hidden feedback. Check reduced motion and forced-colors modes retain a visible focus indicator.

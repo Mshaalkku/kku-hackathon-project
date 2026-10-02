@@ -83,7 +83,7 @@ window.IQ = window.IQ || {};
   }
 
   const POWERUP_DEF = [
-    { key: "thinkTime", labelKey: "powerUpThinkTime", iconName: "clock", id: "pu-thinktime" },
+    { key: "thinkTime", labelKey: "powerUpThinkTime", benefitKey: "powerUpExtraTimeBenefit", iconName: "clock", id: "pu-thinktime" },
     { key: "secondChance", labelKey: "powerUpSecondChance", iconName: "retry", id: "pu-secondchance" },
     { key: "hint", labelKey: "powerUpHint", iconName: "bulb", id: "pu-hint" },
     { key: "doubleXP", labelKey: "powerUpDoubleXp", iconName: "bolt", id: "pu-doublexp" },
@@ -98,19 +98,21 @@ window.IQ = window.IQ || {};
     POWERUP_DEF.forEach((def) => {
       const count = state.powerUps[def.key] || 0;
       const label = IQ.i18n.t(def.labelKey);
+      const benefit = def.benefitKey ? IQ.i18n.t(def.benefitKey) : "";
+      const accessibleLabel = [label, benefit].filter(Boolean).join(" — ");
       const btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "powerup-btn";
+      btn.className = "powerup-btn" + (def.key === "thinkTime" ? " powerup-extra-time" : "");
       btn.id = def.id;
       const disabled = count <= 0 || Boolean(opts.disabled);
       btn.disabled = disabled;
       btn.title = count <= 0
         ? IQ.i18n.t("powerUpEarnMore")
-        : IQ.i18n.t("powerUpAvailable", { label, count });
+        : IQ.i18n.t("powerUpAvailable", { label: accessibleLabel, count });
       btn.setAttribute("aria-label", disabled
-        ? IQ.i18n.t("powerUpUnavailable", { label, count })
-        : IQ.i18n.t("powerUpAvailable", { label, count }));
-      btn.innerHTML = icon(def.iconName) + "<span>" + label + "</span><span class=\"powerup-count\" aria-hidden=\"true\">" + count + "</span>";
+        ? IQ.i18n.t("powerUpUnavailable", { label: accessibleLabel, count })
+        : IQ.i18n.t("powerUpAvailable", { label: accessibleLabel, count }));
+      btn.innerHTML = icon(def.iconName) + "<span class=\"powerup-label\">" + label + (benefit ? "<small>" + benefit + "</small>" : "") + "</span><span class=\"powerup-count\" aria-hidden=\"true\">" + count + "</span>";
       btn.addEventListener("click", () => {
         if (disabled) {
           if (count <= 0) toast(IQ.i18n.t("powerUpEarnMoreLabel", { label }));

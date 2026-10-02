@@ -93,7 +93,7 @@
         <div class="question-card">
           <h2 id="question-text" class="question-text" tabindex="-1" dir="ltr" aria-describedby="stage-label question-progress">Loading your first question…</h2>
           <div id="question-translation" class="translation-block" hidden dir="auto"><span class="translation-label" data-i18n="translation">Translation</span><p id="question-translation-text"></p></div>
-          <p id="prep-timer" class="prep-timer" hidden></p>
+          <p id="prep-timer" class="prep-timer" role="timer" aria-live="off" hidden></p>
         </div>
         <div id="hint-panel" class="hint-panel" hidden><strong data-i18n="hint">Hint</strong><p id="hint-text"></p><div id="hint-translation" class="translation-block compact" hidden dir="auto"></div></div>
         <section id="practice-feedback-panel" class="practice-feedback-panel" hidden aria-live="polite" aria-labelledby="practice-feedback-title">
@@ -104,14 +104,15 @@
           <div class="feedback-actions" role="group" data-i18n-aria-label="practiceFeedbackActions" aria-label="Practice feedback actions"><button id="btn-continue-interview" class="btn btn-primary" type="button" data-i18n="continueInterview">Continue Interview</button><button id="btn-retry-answer" class="btn btn-secondary" type="button" data-i18n="retryAnswer">Improve / Retry Answer</button><button id="btn-hear-feedback" class="btn btn-text" type="button" data-i18n="hearFeedback">Hear feedback</button></div>
         </section>
         <div id="quick-tip-panel" class="quick-tip-panel" hidden><strong data-i18n="quickTip">Quick tip</strong><p id="quick-tip-text"></p></div>
-        <div class="answer-area">
+        <div class="answer-area" data-recording="false">
           <div id="live-transcript" class="live-transcript" aria-live="polite"></div>
+          <p id="voice-answer-helper" class="voice-helper"><span class="voice-helper-icon" aria-hidden="true"></span><span data-i18n="voiceAnswerHelper">Speak your answer — your voice will be converted to text.</span></p>
           <label class="input-label" for="answer-input"><span data-i18n="yourAnswer">Your answer</span> <span class="input-label-note" data-i18n="typingAlwaysAvailable">(typing is always available)</span></label>
           <textarea id="answer-input" rows="5" dir="auto" data-i18n-placeholder="answerPlaceholder" placeholder="Type here, or start your answer with the microphone."></textarea>
           <p id="mic-status-label" class="mic-status-label" aria-live="polite" data-i18n="typingReady">Type your answer, or start the microphone when you are ready.</p>
           <div class="voice-controls" role="group" data-i18n-aria-label="answerControls" aria-label="Answer controls">
-            <button id="btn-start-answer" class="btn btn-primary" type="button" data-i18n="startAnswer">Start Answer</button>
-            <button id="btn-stop-answer" class="btn btn-secondary" type="button" data-i18n="stopAnswer">Stop Answer</button>
+            <button id="btn-start-answer" class="btn btn-primary microphone-action" type="button"><span class="button-icon" aria-hidden="true"></span><span data-i18n="startAnswer">Answer with Microphone</span></button>
+            <button id="btn-stop-answer" class="btn btn-secondary stop-recording-action" type="button"><span class="recording-dot" aria-hidden="true"></span><span data-i18n="stopAnswer">Stop Listening</span></button>
             <button id="btn-finish-answer" class="btn btn-primary" type="button" data-i18n="finishAnswer">Finish Answer</button>
             <button id="btn-skip-question" class="btn btn-text" type="button" data-i18n="skipQuestion">Skip Question</button>
             <button id="btn-repeat-question" class="btn btn-text" type="button" data-i18n="repeatQuestion">Repeat Question</button>
