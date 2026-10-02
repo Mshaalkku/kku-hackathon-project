@@ -625,7 +625,13 @@
     session.pendingFinish = false;
     setInterviewerState("thinking", t("thinking"));
     updateControls();
-    const analysis = IQ.feedback.analyzeAnswer(rawText);
+    const analysis = IQ.feedback.analyzeAnswer(rawText, {
+      question: session.currentQuestion.text.en,
+      stage: session.currentQuestion.stage,
+      roleId: session.roleId,
+      roleFocus: IQ.questions.getRoleFocus(session.roleId),
+      difficulty: session.difficultyId,
+    });
     const entry = {
       questionId: session.currentQuestion.id, question: session.currentQuestion.text.en, questionText: clone(session.currentQuestion.text), answer: rawText,
       analysis, awardedXP: 0, skipped: Boolean(opts.skipped), hintUsed: session.hintUsedForCurrent, turnKind: session.currentTurnKind, stage: session.currentQuestion.stage,
@@ -653,8 +659,18 @@
     await resolveNextTurn(entry, opts, token);
   }
 
+  function feedbackContext(entry) {
+    return {
+      question: entry && entry.question,
+      stage: entry && entry.stage,
+      roleId: session.roleId,
+      roleFocus: IQ.questions.getRoleFocus(session.roleId),
+      difficulty: session.difficultyId,
+    };
+  }
+
   function renderPracticeFeedback(entry) {
-    const feedback = IQ.feedback.buildImmediateFeedback(entry.analysis, IQ.questions.getRoleFocus(session.roleId));
+    const feedback = IQ.feedback.buildImmediateFeedback(entry.analysis, feedbackContext(entry));
     const interfaceLocale = IQ.i18n.preferences.interfaceLanguage;
     const translationLocale = currentTranslationLanguage();
     el.practiceFeedbackPanel.hidden = false;
@@ -749,7 +765,7 @@
 
   function hearPracticeFeedback() {
     if (!session || !state.controls().canHearFeedback || !session.pendingPracticeEntry) return;
-    const feedback = IQ.feedback.buildImmediateFeedback(session.pendingPracticeEntry.analysis, IQ.questions.getRoleFocus(session.roleId));
+    const feedback = IQ.feedback.buildImmediateFeedback(session.pendingPracticeEntry.analysis, feedbackContext(session.pendingPracticeEntry));
     IQ.speech.speak(feedback.tip.en, { gender: session.interviewer.voicePreference, interviewerId: session.interviewer.id, personality: session.personality });
   }
 
@@ -922,7 +938,13 @@
   }
 
   async function buildAndShowReport(isPartial) {
-    let report = IQ.feedback.buildReport(session.transcript, { plannedQuestions: session.plan.length, isPartial });
+    let report = IQ.feedback.buildReport(session.transcript, {
+      plannedQuestions: session.plan.length,
+      isPartial,
+      roleId: session.roleId,
+      roleFocus: IQ.questions.getRoleFocus(session.roleId),
+      difficulty: session.difficultyId,
+    });
     if (session.usingAI && session.transcript.length) {
       activeRequest = new AbortController();
       try {

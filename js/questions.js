@@ -273,26 +273,30 @@ window.IQ = window.IQ || {};
 
   function detectQuestionRequest(rawText) {
     const value = normalizeQuestionRequest(rawText);
-    if (!value || value.split(" ").length > 14) return null;
+    if (!value || value.split(" ").length > 20) return null;
     const matches = {
       repeat: [
-        /^(?:can|could|would|will) you (?:please )?(?:repeat|say) (?:the )?(?:question|that|it)(?: again)?(?: please)?$/,
-        /^(?:please )?(?:repeat|say) (?:the )?(?:question|that|it)(?: again)?(?: please)?$/,
-        /^one more time(?: please)?$/,
+        /^(?:sorry )?(?:can|could|would|will) you (?:please )?(?:repeat|say) (?:the )?(?:last )?(?:question|that|it)(?: again| once more| one more time)?(?: for me)?(?: please)?$/,
+        /^(?:please )?(?:repeat|say) (?:the )?(?:last )?(?:question|that|it)(?: again| once more| one more time)?(?: please)?$/,
+        /^(?:i )?(?:missed|did not catch|didn't catch) (?:the )?(?:question|that|it)(?: please)?$/,
+        /^(?:say it again|repeat please|one more time)(?: please)?$/,
       ],
       clarify: [
-        /^what do you mean(?: by (?:that|the question))?$/,
-        /^(?:can|could|would) you (?:please )?(?:clarify|explain|rephrase)(?: (?:that|the question|it))?(?: please)?$/,
-        /^i (?:do not|don't) understand(?: (?:the question|what you mean|that))?$/,
+        /^what (?:do|does) (?:you|that) mean(?: by (?:that|this|the question))?$/,
+        /^(?:can|could|would) you (?:please )?(?:clarify|explain|rephrase)(?: (?:what you mean|that|this|the question|it))?(?: please)?$/,
+        /^(?:explain please|can you be more specific)(?: please)?$/,
+        /^i (?:do not|don't|did not|didn't) (?:understand|get)(?: (?:the question|what you mean|that|this|it))?(?: please)?$/,
       ],
       example: [
-        /^(?:can|could|would) you (?:please )?(?:give|provide|share) (?:me )?(?:an? )?example(?: (?:of that|for this))?(?: please)?$/,
+        /^(?:can|could|would) you (?:please )?(?:give|provide|share|show) (?:me )?(?:an? |a specific )?example(?: (?:of (?:that|what you mean)|for this))?(?: please)?$/,
         /^what (?:kind of )?example do you mean$/,
       ],
       context: [
-        /^(?:can|could|would) you (?:please )?(?:give|provide) (?:me )?(?:more )?context(?: (?:for this))?(?: please)?$/,
-        /^what (?:should|would you like me to) talk about$/,
-        /^what are you looking for(?: in (?:my )?answer)?$/,
+        /^(?:can|could|would) you (?:please )?(?:give|provide|share|tell) (?:me )?(?:some |more )?context(?: (?:for|about) this)?(?: please)?$/,
+        /^what (?:should i|would you like me to|do you want me to) talk about$/,
+        /^what (?:should i|do you want me to) (?:include|focus on|mention)$/,
+        /^what (?:are you|kind of answer are you) looking for(?: in (?:my )?answer)?$/,
+        /^i need more context$/,
       ],
     };
     const kinds = Object.keys(matches).filter((kind) => matches[kind].some((pattern) => pattern.test(value)));
