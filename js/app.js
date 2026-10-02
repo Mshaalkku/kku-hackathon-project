@@ -200,7 +200,18 @@
       const selected = choices[choiceKey] === item.value;
       button.setAttribute("aria-pressed", String(selected));
       button.setAttribute("aria-label", selected ? t("selectedOption", { label: item.label }) : t("option", { label: item.label }));
-      button.textContent = item.label;
+      if (choiceKey === "interviewer" && item.value === "david") {
+        button.classList.add("has-interviewer-portrait");
+        const portrait = document.createElement("span");
+        portrait.className = "interviewer-option-portrait interviewer-option-david";
+        portrait.setAttribute("aria-hidden", "true");
+        portrait.innerHTML = '<svg viewBox="0 0 48 48" focusable="false"><path class="portrait-jacket" d="M9 48c2-13 8-19 15-20 7 1 13 7 15 20z"/><path class="portrait-shirt" d="m18 29 6 7 6-7 2 12H16z"/><path class="portrait-tie" d="m22 30h4l-1 6 1 8-2 3-2-3 1-8z"/><path class="portrait-skin" d="M14 17c0-10 4-15 10-15s10 5 10 15v6c0 7-4 11-10 11s-10-4-10-11z"/><path class="portrait-hair" d="M13 18C13 7 18 1 25 1c7 0 11 5 10 17-5-4-14-6-22 0z"/><path class="portrait-brow" d="M17 20h5m4 0h5"/><circle class="portrait-eye" cx="19" cy="23" r="1.2"/><circle class="portrait-eye" cx="29" cy="23" r="1.2"/><path class="portrait-beard" d="M15 27c2 5 5 7 9 7s7-2 9-7c-5 4-13 4-18 0z"/></svg>';
+        button.appendChild(portrait);
+      }
+      const label = document.createElement("span");
+      label.className = "option-label";
+      label.textContent = item.label;
+      button.appendChild(label);
       if (item.sub) { const sub = document.createElement("span"); sub.className = "option-sub"; sub.textContent = item.sub; button.appendChild(sub); }
       button.addEventListener("click", () => { choices[choiceKey] = item.value; buildSetupOptionGrids(); });
       container.appendChild(button);
