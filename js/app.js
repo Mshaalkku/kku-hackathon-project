@@ -46,7 +46,7 @@
       "btn-start-interview", "btn-load-example", "demo-speed-toggle", "interview-translation-language-select", "subtitle-toggle", "btn-end-interview",
       "interviewer-character", "character-sarah", "character-david", "interviewer-name", "interviewer-role-label", "interviewer-status", "stage-label", "question-progress", "progress-dots",
       "question-text", "question-translation", "question-translation-text", "prep-timer", "hint-panel", "hint-text", "hint-translation", "quick-tip-panel", "quick-tip-text", "quick-tip-translation",
-      "office-scene", "practice-feedback-panel", "feedback-score", "feedback-strength", "feedback-strength-translation", "feedback-improvement", "feedback-improvement-translation", "feedback-indicators", "feedback-tip-text", "feedback-tip-translation", "btn-continue-interview", "btn-retry-answer", "btn-hear-feedback",
+      "office-scene", "practice-feedback-panel", "feedback-score", "feedback-strength", "feedback-strength-translation", "feedback-improvement", "feedback-improvement-translation", "feedback-why", "feedback-why-translation", "feedback-indicators", "feedback-tip-text", "feedback-tip-translation", "feedback-stronger-example", "feedback-stronger-example-translation", "btn-continue-interview", "btn-retry-answer", "btn-hear-feedback",
       "live-transcript", "answer-input", "mic-status-label", "btn-start-answer", "btn-stop-answer", "btn-finish-answer", "btn-skip-question", "btn-repeat-question", "powerup-bar",
       "end-interview-dialog", "btn-cancel-end", "btn-confirm-end", "btn-play-again", "btn-back-setup", "report-global-translation-toggle",
       "report-mode-note", "report-example-banner", "report-score-ring", "report-score-value", "report-xp-gained", "report-level-banner", "report-achievements",
@@ -675,23 +675,22 @@
     const translationLocale = currentTranslationLanguage();
     el.practiceFeedbackPanel.hidden = false;
     el.feedbackScore.textContent = t("reportScore", { score: feedback.score });
-    // English remains the scored and spoken source; a selected translation is shown separately.
-    const sourceStrength = feedback.strength.en;
-    const sourceImprovement = feedback.improvement.en;
-    const translatedStrength = feedback.strength[translationLocale];
-    const translatedImprovement = feedback.improvement[translationLocale];
-    el.feedbackStrength.textContent = sourceStrength;
-    el.feedbackStrength.dir = "ltr";
-    el.feedbackImprovement.textContent = sourceImprovement;
-    el.feedbackImprovement.dir = "ltr";
-    const showStrengthTranslation = translationLocale !== "en" && translatedStrength && translatedStrength !== sourceStrength;
-    const showImprovementTranslation = translationLocale !== "en" && translatedImprovement && translatedImprovement !== sourceImprovement;
-    el.feedbackStrengthTranslation.hidden = !showStrengthTranslation;
-    el.feedbackStrengthTranslation.textContent = showStrengthTranslation ? `${t("translation")}: ${translatedStrength}` : "";
-    el.feedbackStrengthTranslation.dir = IQ.i18n.getLanguage(translationLocale).dir;
-    el.feedbackImprovementTranslation.hidden = !showImprovementTranslation;
-    el.feedbackImprovementTranslation.textContent = showImprovementTranslation ? `${t("translation")}: ${translatedImprovement}` : "";
-    el.feedbackImprovementTranslation.dir = IQ.i18n.getLanguage(translationLocale).dir;
+
+    function renderSourceAndTranslation(sourceNode, translationNode, source, translation) {
+      sourceNode.textContent = source || "";
+      sourceNode.dir = "ltr";
+      const show = translationLocale !== "en" && translation && translation !== source;
+      translationNode.hidden = !show;
+      translationNode.textContent = show ? `${t("translation")}: ${translation}` : "";
+      translationNode.dir = IQ.i18n.getLanguage(translationLocale).dir;
+    }
+
+    renderSourceAndTranslation(el.feedbackStrength, el.feedbackStrengthTranslation, feedback.strength.en, feedback.strength[translationLocale]);
+    renderSourceAndTranslation(el.feedbackImprovement, el.feedbackImprovementTranslation, feedback.improvement.en, feedback.improvement[translationLocale]);
+    renderSourceAndTranslation(el.feedbackWhy, el.feedbackWhyTranslation, feedback.why.en, feedback.why[translationLocale]);
+    renderSourceAndTranslation(el.feedbackTipText, el.feedbackTipTranslation, feedback.howTo.en, feedback.howTo[translationLocale]);
+    renderSourceAndTranslation(el.feedbackStrongerExample, el.feedbackStrongerExampleTranslation, feedback.strongerExample.en, feedback.strongerExample[translationLocale]);
+
     el.feedbackIndicators.innerHTML = "";
     feedback.indicators.forEach((indicator) => {
       const chip = document.createElement("span");
@@ -704,14 +703,6 @@
       chip.textContent = `${IQ.i18n.getText(indicator.label, interfaceLocale)}: ${value}`;
       el.feedbackIndicators.appendChild(chip);
     });
-    const translation = feedback.tip[translationLocale];
-    const sourceTip = feedback.tip.en;
-    el.feedbackTipText.textContent = sourceTip;
-    el.feedbackTipText.dir = "ltr";
-    const showTranslation = translationLocale !== "en" && translation && translation !== sourceTip;
-    el.feedbackTipTranslation.hidden = !showTranslation;
-    el.feedbackTipTranslation.textContent = showTranslation ? `${t("translation")}: ${translation}` : "";
-    el.feedbackTipTranslation.dir = IQ.i18n.getLanguage(translationLocale).dir;
     requestAnimationFrame(() => {
       const title = document.getElementById("practice-feedback-title");
       title.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1015,10 +1006,14 @@
     el.reportScoreRing.style.setProperty("--score-color", scoreColor(score));
     el.reportScoreValue.textContent = score;
     el.reportXpGained.textContent = t("xpGained", { xp: meta.xpGained });
-    el.reportStrongestSkill.textContent = report.strongestSkill || (report.strengths || [""])[0];
-    el.reportStrongestSkill.dir = "ltr";
-    el.reportBiggestImprovement.textContent = report.biggestImprovement || (report.weaknesses || [""])[0];
-    el.reportBiggestImprovement.dir = "ltr";
+    el.reportStrongestSkill.innerHTML = "";
+    const strongest = document.createElement("span"); strongest.textContent = report.strongestSkill || (report.strengths || [""])[0]; strongest.dir = "ltr"; el.reportStrongestSkill.appendChild(strongest);
+    const translatedStrongest = (translation.strengths || [])[0];
+    if (showTranslation && translatedStrongest && translatedStrongest !== strongest.textContent) el.reportStrongestSkill.appendChild(translationNode(translatedStrongest));
+    el.reportBiggestImprovement.innerHTML = "";
+    const biggest = document.createElement("span"); biggest.textContent = report.biggestImprovement || (report.weaknesses || [""])[0]; biggest.dir = "ltr"; el.reportBiggestImprovement.appendChild(biggest);
+    const translatedBiggest = (translation.weaknesses || [])[0];
+    if (showTranslation && translatedBiggest && translatedBiggest !== biggest.textContent) el.reportBiggestImprovement.appendChild(translationNode(translatedBiggest));
     el.reportSummary.innerHTML = "";
     const summary = document.createElement("p"); summary.textContent = report.summary || ""; summary.dir = "ltr"; el.reportSummary.appendChild(summary);
     if (showTranslation && translation.summary && translation.summary !== summary.textContent) el.reportSummary.appendChild(translationNode(translation.summary));
@@ -1081,8 +1076,9 @@
         translationArea.innerHTML = "";
         const translated = (item.translation || {})[locale] || {};
         if (locale !== "en" && (translated.tip || translated.improvedExample)) {
-          if (translated.tip) translationArea.appendChild(translationNode(translated.tip));
-          if (translated.improvedExample) translationArea.appendChild(translationNode(translated.improvedExample));
+          if (translated.tip && translated.tip !== tip.textContent) translationArea.appendChild(translationNode(translated.tip));
+          if (translated.improvedExample && translated.improvedExample !== example.textContent) translationArea.appendChild(translationNode(translated.improvedExample));
+          if (!translationArea.childElementCount) translationArea.textContent = t("translationUnavailable");
         } else if (locale !== "en") translationArea.textContent = t("translationUnavailable");
       };
       content();
