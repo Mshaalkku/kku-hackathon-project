@@ -287,8 +287,9 @@
     el.interviewerName.textContent = session.interviewerName;
     el.interviewerRoleLabel.textContent = interviewerRoleLabel();
     renderSessionCandidate();
-    el.characterSarah.hidden = session.interviewer.visualId !== "sarah";
-    el.characterDavid.hidden = session.interviewer.visualId !== "david";
+    const showSarah = session.interviewer.visualId === "sarah";
+    el.characterSarah.toggleAttribute("hidden", !showSarah);
+    el.characterDavid.toggleAttribute("hidden", showSarah);
     el.subtitleToggle.checked = true;
     el.hintPanel.hidden = true;
     el.quickTipPanel.hidden = true;
