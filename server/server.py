@@ -28,7 +28,9 @@ ALLOWED_ROLES = {
     "general", "software-engineering", "information-systems", "cybersecurity",
     "ai-machine-learning", "data-analysis", "it-support", "product-management",
     "project-management", "marketing", "finance-accounting", "human-resources", "sales",
-    "ux-ui-design", "business-analysis", "customer-service",
+    "ux-ui-design", "business-analysis", "customer-service", "healthcare-nursing",
+    "education-teaching", "engineering", "administrative-office", "operations-supply-chain",
+    "legal-law", "graphic-design-creative", "hospitality-tourism",
 }
 PERSONALITY = {
     "friendly": "warm and encouraging",
