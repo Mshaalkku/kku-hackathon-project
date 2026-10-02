@@ -1,5 +1,5 @@
 /* ===========================================================
-   Interview Quest — staged, multilingual interview plans
+   Ready2Interview — staged, multilingual interview plans
    Main questions are deterministic. AI may add one bounded follow-up
    but never controls the next main interview stage.
    =========================================================== */

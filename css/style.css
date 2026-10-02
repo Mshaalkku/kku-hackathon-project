@@ -1,4 +1,4 @@
-/* Interview Quest — warm, professional interview practice experience */
+/* Ready2Interview — warm, professional interview practice experience */
 :root {
   --bg: #f3eee6;
   --bg-elevated: #fffdf8;
@@ -137,7 +137,9 @@ h3 { font-size: 1rem; }
 .brand-mark svg { inline-size: 27px; block-size: 33px; overflow: visible; }
 .brand-mark path:first-child { fill: var(--primary); }
 .brand-mark path:last-child { fill: var(--xp); }
+.brand-copy { display: grid; gap: 1px; min-inline-size: 0; }
 .brand-name { font-family: var(--font-display); font-size: 1.18rem; }
+.brand-tagline { color: var(--text-muted); font-family: var(--font); font-size: .62rem; font-weight: 700; letter-spacing: 0; line-height: 1.15; }
 .topbar-actions, .hud, .hud-item { display: flex; align-items: center; gap: var(--space-2); }
 .topbar-actions { gap: var(--space-3); }
 .hud { gap: var(--space-4); color: var(--text-muted); }
@@ -359,6 +361,7 @@ textarea:focus { border-color: var(--primary); }
   .brand-mark { inline-size: 22px; block-size: 28px; }
   .brand-mark svg { inline-size: 22px; block-size: 28px; }
   .brand-name { overflow: hidden; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
+  .brand-tagline { overflow: hidden; font-size: .56rem; text-overflow: ellipsis; white-space: nowrap; }
   .topbar-actions { display: contents; }
   .theme-toggle { grid-column: 2; grid-row: 1; inline-size: 40px; min-block-size: 40px; }
   .hud { grid-column: 1 / -1; grid-row: 2; display: grid; grid-template-columns: auto minmax(72px, 1fr) auto; align-items: center; gap: var(--space-2); min-inline-size: 0; padding-block-start: 5px; border-block-start: 1px solid var(--border); }

@@ -1,5 +1,5 @@
 /* ===========================================================
-   Interview Quest — small UI helpers
+   Ready2Interview — small UI helpers
    Hand-rolled stroke SVG icons (no emoji, no external icon
    library/download), toasts, view switching, HUD + power-up
    rendering. app.js owns the interview/report-specific markup.

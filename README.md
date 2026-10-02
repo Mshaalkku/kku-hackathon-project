@@ -1,4 +1,6 @@
-# Interview Quest
+# Ready2Interview
+
+**Practice the interview before the real one.**
 
 A voice-first English job-interview practice simulator. Meet Sarah or David in a professional virtual interview room, answer by microphone or typing, earn career-training XP, and receive a practical training report.
 

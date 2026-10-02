@@ -1,5 +1,5 @@
 /* ===========================================================
-   Interview Quest — resilient browser speech layer
+   Ready2Interview — resilient browser speech layer
    Browser speech remains optional: typed answers always work.
    =========================================================== */
 window.IQ = window.IQ || {};

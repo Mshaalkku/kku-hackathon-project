@@ -1,5 +1,5 @@
 /* ===========================================================
-   Interview Quest — interview lifecycle state machine
+   Ready2Interview — interview lifecycle state machine
    Keeps voice, AI, and UI actions in a safe, explicit order.
    =========================================================== */
 window.IQ = window.IQ || {};

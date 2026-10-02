@@ -1,4 +1,4 @@
-"""Interview Quest local-only server.
+"""Ready2Interview local-only server.
 
 It serves the static app and makes narrowly validated Claude requests. The
 browser never receives the Anthropic key, server prompts, provider errors, or
@@ -382,7 +382,7 @@ class ReusableTCPServer(socketserver.TCPServer):
 def main():
     with ReusableTCPServer(("127.0.0.1", PORT), Handler) as httpd:
         state = "ENABLED" if API_KEY else "DISABLED (no ANTHROPIC_API_KEY; built-in fallback is ready)"
-        print(f"Interview Quest running at http://localhost:{PORT}")
+        print(f"Ready2Interview running at http://localhost:{PORT}")
         print("AI interviewer:", state)
         httpd.serve_forever()
 

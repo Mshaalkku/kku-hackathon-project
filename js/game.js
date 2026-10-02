@@ -1,5 +1,5 @@
 /* ===========================================================
-   Interview Quest — game layer
+   Ready2Interview — game layer
    XP, levels, streaks, achievements and power-up inventory.
    Everything the user types/says stays in the browser — only
    this progress summary is persisted, in localStorage.

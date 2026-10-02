@@ -1,5 +1,5 @@
 /* ===========================================================
-   Interview Quest — made-up example interview data
+   Ready2Interview — made-up example interview data
    Loaded with a script tag so the app works when opened from disk.
    No real person, employer, or customer information is included.
    =========================================================== */

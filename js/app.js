@@ -1,5 +1,5 @@
 /* ===========================================================
-   Interview Quest — staged interview controller
+   Ready2Interview — staged interview controller
    A deterministic English plan guarantees a complete offline session.
    AI can add a bounded, validated follow-up but cannot control stages.
    =========================================================== */
@@ -82,7 +82,7 @@
 
   function renderInterface() {
     IQ.i18n.applyDocumentLanguage();
-    document.title = `Interview Quest — ${t("appTagline")}`;
+    document.title = `Ready2Interview — ${t("appTagline")}`;
     document.querySelectorAll("[data-i18n]").forEach((node) => { node.textContent = t(node.dataset.i18n); });
     document.querySelectorAll("[data-i18n-aria-label]").forEach((node) => { node.setAttribute("aria-label", t(node.dataset.i18nAriaLabel)); });
     document.querySelectorAll("[data-i18n-title]").forEach((node) => { node.title = t(node.dataset.i18nTitle); });

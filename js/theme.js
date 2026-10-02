@@ -1,5 +1,5 @@
 /* ===========================================================
-   Interview Quest — browser-local visual theme preference.
+   Ready2Interview — browser-local visual theme preference.
    This preference is separate from language and game progress.
    =========================================================== */
 window.IQ = window.IQ || {};

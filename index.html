@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Interview Quest — Voice Interview Trainer</title>
+<title>Ready2Interview — Voice Interview Trainer</title>
 <script src="js/theme.js"></script>
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -12,9 +12,9 @@
 <div id="toast-region" class="toast-region" aria-live="polite"></div>
 
 <header class="topbar">
-  <div class="brand" data-i18n-aria-label="brandLabel" aria-label="Interview Quest">
+  <div class="brand" data-i18n-aria-label="brandLabel" aria-label="Ready2Interview">
     <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 32 38" focusable="false"><path d="M8 2h16l-3 10-5 4-5-4z"/><path d="m11 17 5 4 5-4 3 16-8 3-8-3z"/></svg></span>
-    <span class="brand-name">Interview Quest</span>
+    <span class="brand-copy"><span class="brand-name">Ready2Interview</span><span class="brand-tagline">Practice the interview before the real one.</span></span>
   </div>
   <div class="topbar-actions">
     <button id="theme-toggle" class="theme-toggle" type="button" aria-label="Switch to dark theme" aria-pressed="false" title="Switch to dark theme"></button>
@@ -137,7 +137,7 @@
     <div class="setup-actions"><button id="btn-play-again" class="btn btn-primary btn-lg" type="button" data-i18n="practiceAgain">Practice again</button><button id="btn-back-setup" class="btn btn-ghost" type="button" data-i18n="backToMenu">Back to menu</button></div>
   </section>
 </main>
-<footer class="footer-note" data-i18n="learningOnly">Interview Quest is a practice tool. Scores and feedback are for learning only, not a real hiring decision.</footer>
+<footer class="footer-note" data-i18n="learningOnly">Ready2Interview is a practice tool. Scores and feedback are for learning only, not a real hiring decision.</footer>
 
 <dialog id="end-interview-dialog" class="confirm-dialog" aria-labelledby="end-dialog-title" aria-describedby="end-dialog-description"><form method="dialog"><h2 id="end-dialog-title" data-i18n="endDialogTitle">End this interview?</h2><p id="end-dialog-description" data-i18n="endDialogDescription">You will receive a partial training report from the answers you have completed. Your unfinished question will not be submitted.</p><div class="dialog-actions"><button id="btn-cancel-end" class="btn btn-ghost" value="cancel" type="submit" data-i18n="keepPracticing">Keep practicing</button><button id="btn-confirm-end" class="btn btn-danger" value="confirm" type="submit" data-i18n="endAndViewReport">End and view report</button></div></form></dialog>
 

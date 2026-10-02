@@ -1,5 +1,5 @@
 /* ===========================================================
-   Interview Quest — local feedback and report fallback
+   Ready2Interview — local feedback and report fallback
    Deterministic English-focused coaching; original answers stay intact.
    =========================================================== */
 window.IQ = window.IQ || {};

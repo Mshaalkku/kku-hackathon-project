@@ -1,5 +1,5 @@
 /* ===========================================================
-   Interview Quest — narrow client for the local-only AI proxy
+   Ready2Interview — narrow client for the local-only AI proxy
    The browser sends bounded data only. API keys and prompts remain
    inside server/server.py and are never sent to the client.
    =========================================================== */
